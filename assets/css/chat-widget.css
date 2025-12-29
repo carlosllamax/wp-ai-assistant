@@ -690,6 +690,14 @@
     text-decoration: underline !important;
 }
 
+/* Tablet Styles */
+@media (max-width: 768px) {
+    #wpaia-chat-widget .wpaia-chat-window {
+        width: 350px !important;
+        max-height: 450px !important;
+    }
+}
+
 /* Mobile Styles */
 @media (max-width: 480px) {
     #wpaia-chat-widget.wpaia-widget {
@@ -707,16 +715,43 @@
     #wpaia-chat-widget .wpaia-chat-window {
         width: calc(100vw - 20px) !important;
         max-width: none !important;
-        height: calc(100vh - 100px) !important;
-        max-height: none !important;
+        height: auto !important;
+        max-height: 70vh !important;
+        min-height: 350px !important;
         bottom: 70px !important;
         right: -10px !important;
         border-radius: var(--wpaia-radius-sm) !important;
     }
     
+    #wpaia-chat-widget .wpaia-messages {
+        max-height: calc(70vh - 180px) !important;
+        min-height: 150px !important;
+    }
+    
     #wpaia-chat-widget .wpaia-toggle-btn {
         width: 56px !important;
         height: 56px !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-header {
+        padding: 12px 14px !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-input-area {
+        padding: 10px !important;
+    }
+}
+
+/* Small Mobile - Very short screens */
+@media (max-height: 600px) {
+    #wpaia-chat-widget .wpaia-chat-window {
+        max-height: 60vh !important;
+        min-height: 280px !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-messages {
+        max-height: calc(60vh - 160px) !important;
+        min-height: 100px !important;
     }
 }
 
