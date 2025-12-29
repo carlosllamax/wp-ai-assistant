@@ -215,3 +215,63 @@
         padding-top: 0;
     }
 }
+
+/* License Card */
+.wpaia-license-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.wpaia-license-card h3 {
+    color: #fff;
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.wpaia-license-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.wpaia-license-active {
+    color: #90EE90;
+}
+
+.wpaia-license-inactive {
+    color: rgba(255,255,255,0.8);
+}
+
+.wpaia-license-email {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+}
+
+.wpaia-license-card input.regular-text {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.wpaia-premium-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+    font-size: 13px;
+}
+
+.wpaia-premium-features li {
+    padding: 4px 0;
+}
+
+.wpaia-license-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.wpaia-license-card .button {
+    flex: 1;
+    text-align: center;
+}

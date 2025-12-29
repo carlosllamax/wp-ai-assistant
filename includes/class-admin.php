@@ -433,6 +433,46 @@ class WPAIA_Admin {
                 
                 <!-- Sidebar -->
                 <div class="wpaia-admin-sidebar">
+                    <!-- License Card -->
+                    <div class="wpaia-card wpaia-license-card">
+                        <h3><?php _e('Premium License', 'wp-ai-assistant'); ?></h3>
+                        <?php 
+                        $license_key = get_option('wpaia_license_key', '');
+                        $license_email = get_option('wpaia_license_email', '');
+                        $is_valid = WP_AI_Assistant::has_valid_license();
+                        
+                        if ($is_valid): ?>
+                            <div class="wpaia-license-status wpaia-license-active">
+                                <span class="dashicons dashicons-yes-alt"></span>
+                                <?php _e('License Active', 'wp-ai-assistant'); ?>
+                            </div>
+                            <p class="wpaia-license-email"><?php echo esc_html($license_email); ?></p>
+                            <input type="text" value="<?php echo esc_attr(substr($license_key, 0, 8)); ?>********" readonly class="regular-text">
+                            <button type="button" class="button wpaia-deactivate-license">
+                                <?php _e('Deactivate', 'wp-ai-assistant'); ?>
+                            </button>
+                        <?php else: ?>
+                            <div class="wpaia-license-status wpaia-license-inactive">
+                                <span class="dashicons dashicons-lock"></span>
+                                <?php _e('No License', 'wp-ai-assistant'); ?>
+                            </div>
+                            <p><?php _e('Unlock premium features:', 'wp-ai-assistant'); ?></p>
+                            <ul class="wpaia-premium-features">
+                                <li>Remove branding footer</li>
+                                <li>Priority support</li>
+                                <li>Future premium features</li>
+                            </ul>
+                            <input type="text" id="wpaia_license_key_input" placeholder="Enter license key" class="regular-text">
+                            <div class="wpaia-license-buttons">
+                                <button type="button" class="button button-primary wpaia-activate-license">
+                                    <?php _e('Activate', 'wp-ai-assistant'); ?>
+                                </button>
+                                <a href="https://carlosllamax.com/plugins/wp-ai-assistant#pricing" target="_blank" class="button">
+                                    Buy License - 99 EUR
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                     <div class="wpaia-card">
                         <h3><?php _e('Quick Start', 'wp-ai-assistant'); ?></h3>
                         <ol>

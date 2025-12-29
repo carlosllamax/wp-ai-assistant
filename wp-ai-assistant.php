@@ -3,7 +3,7 @@
  * Plugin Name: WP AI Assistant
  * Plugin URI: https://github.com/carlosllamax/wp-ai-assistant
  * Description: AI-powered chat assistant for WordPress. Supports Groq, OpenAI, Anthropic. BYOK (Bring Your Own Key).
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Carlos Llamas
  * Author URI: https://carlosllamax.com
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('WPAIA_VERSION', '1.0.0');
+define('WPAIA_VERSION', '1.1.0');
 define('WPAIA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WPAIA_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPAIA_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -64,6 +64,7 @@ final class WP_AI_Assistant {
         require_once WPAIA_PLUGIN_DIR . 'includes/class-context-builder.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/class-conversation.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/class-updater.php';
+        require_once WPAIA_PLUGIN_DIR . 'includes/class-license.php';
         
         // AI Providers
         require_once WPAIA_PLUGIN_DIR . 'includes/providers/interface-provider.php';
@@ -110,6 +111,7 @@ final class WP_AI_Assistant {
         if (is_admin()) {
             new WPAIA_Admin();
             new WPAIA_Updater();
+            new WPAIA_License();
         }
         
         // REST API
@@ -134,7 +136,33 @@ final class WP_AI_Assistant {
      */
     public static function get_option($key, $default = '') {
         $options = get_option('wpaia_settings', array());
-        return isset($options[$key]) ? $options[$key] : $default;
+        $value = isset($options[$key]) ? $options[$key] : $default;
+        
+        // hide_branding requires valid premium license
+        if ($key === 'hide_branding' && $value) {
+            return self::has_valid_license();
+        }
+        
+        return $value;
+    }
+    
+    /**
+     * Check if site has valid premium license
+     */
+    public static function has_valid_license() {
+        static $license_valid = null;
+        
+        if ($license_valid === null) {
+            $license_key = get_option('wpaia_license_key', '');
+            if (empty($license_key)) {
+                $license_valid = false;
+            } else {
+                $cached = get_transient('wpaia_license_status');
+                $license_valid = ($cached === 'valid');
+            }
+        }
+        
+        return $license_valid;
     }
     
     /**
@@ -183,5 +211,8 @@ function wpaia_init() {
 
 // Start the plugin
 wpaia_init();
+
+
+
 
 

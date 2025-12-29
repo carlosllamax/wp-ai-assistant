@@ -249,7 +249,69 @@
                 }
             });
         });
+        // License activation
+        $('.wpaia-activate-license').on('click', function() {
+            var $btn = $(this);
+            var licenseKey = $('#wpaia_license_key_input').val().trim();
+            
+            if (!licenseKey) {
+                alert('Please enter a license key');
+                return;
+            }
+            
+            $btn.prop('disabled', true).text('Activating...');
+            
+            $.ajax({
+                url: wpaiaAdmin.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'wpaia_activate_license',
+                    nonce: wpaiaAdmin.nonce,
+                    license_key: licenseKey
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.data.message);
+                        location.reload();
+                    } else {
+                        alert(response.data.message || 'Activation failed');
+                        $btn.prop('disabled', false).text('Activate');
+                    }
+                },
+                error: function() {
+                    alert('Connection error');
+                    $btn.prop('disabled', false).text('Activate');
+                }
+            });
+        });
+        
+        // License deactivation
+        $('.wpaia-deactivate-license').on('click', function() {
+            if (!confirm('Are you sure you want to deactivate your license?')) {
+                return;
+            }
+            
+            var $btn = $(this);
+            $btn.prop('disabled', true).text('Deactivating...');
+            
+            $.ajax({
+                url: wpaiaAdmin.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'wpaia_deactivate_license',
+                    nonce: wpaiaAdmin.nonce
+                },
+                success: function(response) {
+                    alert(response.data.message);
+                    location.reload();
+                },
+                error: function() {
+                    alert('Connection error');
+                    $btn.prop('disabled', false).text('Deactivate');
+                }
+            });
+        });
     });
-
 })(jQuery);
+
 
