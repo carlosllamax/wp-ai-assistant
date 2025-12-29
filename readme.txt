@@ -4,7 +4,7 @@ Tags: ai, chatbot, assistant, groq, openai, woocommerce, customer support
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,14 @@ Yes! The plugin includes GDPR features:
 4. Mobile responsive design
 
 == Changelog ==
+
+= 1.3.2 =
+* Fixed: Product and page links now render correctly as clickable links
+* Fixed: Markdown link parsing order (extract before HTML escape)
+* Improved: Product context now includes explicit markdown links
+* Improved: Page context with same markdown link format
+* Improved: Stronger system prompt instructions for links
+* Added: Product stock status in context
 
 = 1.3.1 =
 * New admin UI redesign with brand colors

@@ -5,6 +5,18 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2024-12-29
+
+### Fixed
+- **Links not rendering**: Fixed markdown link parsing - links to products and pages now display correctly as clickable links
+- **Markdown parse order**: Extract links before HTML escaping to preserve markdown syntax
+
+### Changed
+- **Improved product context**: Now includes explicit markdown links `[Product Name](URL)` that AI can copy directly
+- **Improved page context**: Same markdown link format for pages
+- **Enhanced system prompt**: Stronger instructions to include links in every product/page mention
+- **Stock status**: Added product stock availability to context
+
 ## [1.3.1] - 2024-12-29
 
 ### Added
