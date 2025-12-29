@@ -4,7 +4,7 @@ Tags: ai, chatbot, assistant, groq, openai, woocommerce, customer support
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,14 @@ Yes! The plugin includes GDPR features:
 4. Mobile responsive design
 
 == Changelog ==
+
+= 1.3.1 =
+* New admin UI redesign with brand colors
+* Added header with navigation links to carlosllamax.com
+* Added Quick Start, Preview and Support cards in sidebar
+* Added PRO badge for premium features
+* Fixed: Hide Branding now requires valid license
+* Improved accessibility for disabled switches
 
 = 1.3.0 =
 * Added Anthropic Claude provider (Sonnet, Haiku, Opus)

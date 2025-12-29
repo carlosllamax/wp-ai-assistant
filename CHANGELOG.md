@@ -5,6 +5,28 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2024-12-29
+
+### Added
+- **Admin UI Redesign**: Modern admin panel with brand colors (#000000, #EC6A6D)
+  - New header with logo, version badge, and navigation links
+  - Quick Start guide card in sidebar
+  - Widget Preview card
+  - Support card with documentation and contact links
+  - Footer with credits and useful links
+- **Premium Badge**: PRO badge for premium features (Hide Branding)
+- **CSS Variables**: Consistent theming with CSS custom properties
+
+### Changed
+- **Hide Branding**: Now requires valid license (double validation)
+  - Option must be enabled AND license must be valid
+  - Disabled checkbox when no license
+  - Lock icon with "Get a license" link
+- **Improved Accessibility**: Better disabled state styling for switches
+
+### Fixed
+- Hide Branding could be enabled without valid license
+
 ## [1.3.0] - 2024-12-29
 
 ### Added
