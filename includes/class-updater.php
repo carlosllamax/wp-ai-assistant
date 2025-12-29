@@ -169,7 +169,7 @@ class WPAIA_Updater {
      * Get GitHub release download URL
      */
     private function get_github_release_url($version) {
-        return "https://github.com/{$this->github_user}/{$this->github_repo}/releases/download/v{$version}/wp-ai-assistant.zip";
+        return "https://github.com/{$this->github_user}/{$this->github_repo}/archive/refs/tags/v{$version}.zip";
     }
     
     /**
