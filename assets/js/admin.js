@@ -219,6 +219,37 @@
         // Initialize preview icon on load
         updatePreviewIcon($('#wpaia_chat_icon').val());
 
+        // Check for updates link
+        $(document).on('click', '.wpaia-check-update', function(e) {
+            e.preventDefault();
+            var $link = $(this);
+            var originalText = $link.text();
+            
+            $link.text('Checking...');
+            
+            $.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'wpaia_force_update_check',
+                    nonce: $link.data('nonce')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $link.text('Done! Reloading...');
+                        location.reload();
+                    } else {
+                        $link.text(originalText);
+                        alert('Error checking for updates');
+                    }
+                },
+                error: function() {
+                    $link.text(originalText);
+                    alert('Error checking for updates');
+                }
+            });
+        });
     });
 
 })(jQuery);
+

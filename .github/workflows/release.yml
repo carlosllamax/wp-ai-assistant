@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Create plugin ZIP
+        run: |
+          mkdir -p dist/wp-ai-assistant
+          rsync -av --exclude='.git*' --exclude='dist' --exclude='*.md' --exclude='.github' . dist/wp-ai-assistant/
+          cd dist
+          zip -r wp-ai-assistant.zip wp-ai-assistant
+          mv wp-ai-assistant.zip ../
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: wp-ai-assistant.zip
+          generate_release_notes: true
+          body: |
+            ## WP AI Assistant v${{ steps.get_version.outputs.VERSION }}
+            
+            ### Installation
+            1. Download `wp-ai-assistant.zip`
+            2. Go to WordPress Admin → Plugins → Add New → Upload Plugin
+            3. Upload the ZIP and activate
+            
+            ### Changelog
+            See [CHANGELOG](https://github.com/carlosllamax/wp-ai-assistant/blob/main/CHANGELOG.md)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

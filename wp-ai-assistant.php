@@ -63,6 +63,7 @@ final class WP_AI_Assistant {
         require_once WPAIA_PLUGIN_DIR . 'includes/class-chat-widget.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/class-context-builder.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/class-conversation.php';
+        require_once WPAIA_PLUGIN_DIR . 'includes/class-updater.php';
         
         // AI Providers
         require_once WPAIA_PLUGIN_DIR . 'includes/providers/interface-provider.php';
@@ -108,6 +109,7 @@ final class WP_AI_Assistant {
         // Admin settings
         if (is_admin()) {
             new WPAIA_Admin();
+            new WPAIA_Updater();
         }
         
         // REST API
@@ -181,3 +183,5 @@ function wpaia_init() {
 
 // Start the plugin
 wpaia_init();
+
+
