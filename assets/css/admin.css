@@ -1,16 +1,123 @@
 /**
  * WP AI Assistant - Admin Styles
+ * Brand Colors: #000000 (primary), #EC6A6D (accent)
  */
+
+:root {
+    --wpaia-primary: #000000;
+    --wpaia-accent: #EC6A6D;
+    --wpaia-accent-hover: #d45a5d;
+    --wpaia-white: #ffffff;
+    --wpaia-gray-50: #fafafa;
+    --wpaia-gray-100: #f5f5f5;
+    --wpaia-gray-200: #e5e5e5;
+    --wpaia-gray-300: #d4d4d4;
+    --wpaia-gray-500: #737373;
+    --wpaia-gray-700: #404040;
+    --wpaia-gray-900: #171717;
+    --wpaia-success: #22c55e;
+    --wpaia-error: #ef4444;
+    --wpaia-radius: 12px;
+    --wpaia-radius-sm: 8px;
+    --wpaia-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --wpaia-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin Header */
+.wpaia-admin-header {
+    background: var(--wpaia-primary);
+    color: var(--wpaia-white);
+    padding: 24px 32px;
+    margin: -20px -20px 24px -20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.wpaia-admin-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.wpaia-admin-logo {
+    width: 48px;
+    height: 48px;
+    background: var(--wpaia-accent);
+    border-radius: var(--wpaia-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wpaia-admin-logo svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--wpaia-white);
+}
+
+.wpaia-admin-title h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--wpaia-white);
+}
+
+.wpaia-admin-title p {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.wpaia-admin-version {
+    background: var(--wpaia-accent);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.wpaia-admin-header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.wpaia-admin-header-right a {
+    color: var(--wpaia-white);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: var(--wpaia-radius-sm);
+    font-size: 13px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wpaia-admin-header-right a:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.wpaia-admin-header-right a.wpaia-btn-accent {
+    background: var(--wpaia-accent);
+}
+
+.wpaia-admin-header-right a.wpaia-btn-accent:hover {
+    background: var(--wpaia-accent-hover);
+}
 
 .wpaia-admin-wrap {
     max-width: 1200px;
-    margin: 20px auto;
+    margin: 0 auto;
 }
 
 .wpaia-admin-container {
     display: flex;
     gap: 24px;
-    margin-top: 20px;
+    margin-top: 0;
 }
 
 .wpaia-admin-main {
@@ -19,44 +126,57 @@
 }
 
 .wpaia-admin-sidebar {
-    width: 300px;
+    width: 320px;
     flex-shrink: 0;
 }
 
 /* Cards */
 .wpaia-card {
-    background: #fff;
-    border: 1px solid #c3c4c7;
-    border-radius: 8px;
-    padding: 20px;
+    background: var(--wpaia-white);
+    border: 1px solid var(--wpaia-gray-200);
+    border-radius: var(--wpaia-radius);
+    padding: 24px;
     margin-bottom: 20px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--wpaia-shadow);
 }
 
-.wpaia-card h2,
-.wpaia-card h3 {
-    margin-top: 0;
-    padding-top: 0;
-    border-bottom: 1px solid #f0f0f1;
-    padding-bottom: 12px;
-    margin-bottom: 16px;
-}
-
-.wpaia-card h3 {
-    font-size: 14px;
-}
-
-/* Enable Toggle */
-.wpaia-enable-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
+.wpaia-card h2 {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--wpaia-gray-900);
     border: none;
+}
+
+.wpaia-card h2 + p.description {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--wpaia-gray-500);
+}
+
+.wpaia-card h3 {
+    margin: 0 0 16px 0;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--wpaia-gray-900);
+    border-bottom: 1px solid var(--wpaia-gray-200);
+    padding-bottom: 12px;
+}
+
+/* Enable Toggle Card */
+.wpaia-enable-card {
+    background: var(--wpaia-primary);
+    color: var(--wpaia-white);
+    border: none;
+    box-shadow: var(--wpaia-shadow-lg);
 }
 
 .wpaia-toggle {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     cursor: pointer;
     user-select: none;
 }
@@ -66,10 +186,10 @@
 }
 
 .wpaia-toggle-slider {
-    width: 48px;
-    height: 24px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 12px;
+    width: 52px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
     position: relative;
     transition: 0.3s;
 }
@@ -77,27 +197,118 @@
 .wpaia-toggle-slider::after {
     content: '';
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background: #fff;
+    width: 22px;
+    height: 22px;
+    background: var(--wpaia-white);
     border-radius: 50%;
-    top: 2px;
-    left: 2px;
+    top: 3px;
+    left: 3px;
     transition: 0.3s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .wpaia-toggle input:checked + .wpaia-toggle-slider {
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--wpaia-accent);
 }
 
 .wpaia-toggle input:checked + .wpaia-toggle-slider::after {
-    left: 26px;
+    left: 27px;
 }
 
 .wpaia-toggle-label {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
+}
+
+/* Switch Toggle (for form fields) */
+.wpaia-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.wpaia-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.wpaia-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--wpaia-gray-300);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.wpaia-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--wpaia-white);
+    transition: 0.3s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.wpaia-switch input:checked + .wpaia-slider {
+    background-color: var(--wpaia-accent);
+}
+
+.wpaia-switch input:checked + .wpaia-slider:before {
+    transform: translateX(20px);
+}
+
+.wpaia-switch input:disabled + .wpaia-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Premium Badge */
+.wpaia-premium-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--wpaia-accent) 0%, #f09d9f 100%);
+    color: var(--wpaia-white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wpaia-premium-notice {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--wpaia-accent) !important;
+    font-style: italic;
+}
+
+.wpaia-premium-notice .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+.wpaia-premium-notice a {
+    color: var(--wpaia-accent);
+    font-weight: 600;
+}
+
+.wpaia-premium-notice a:hover {
+    color: var(--wpaia-accent-hover);
+    text-decoration: underline;
 }
 
 /* Form Table */
@@ -106,12 +317,63 @@
 }
 
 .wpaia-card .form-table th {
-    padding: 15px 10px 15px 0;
+    padding: 16px 12px 16px 0;
     width: 200px;
+    font-weight: 500;
+    color: var(--wpaia-gray-700);
 }
 
 .wpaia-card .form-table td {
-    padding: 15px 0;
+    padding: 16px 0;
+}
+
+.wpaia-card .form-table td .description {
+    margin-top: 8px;
+    color: var(--wpaia-gray-500);
+    font-size: 13px;
+}
+
+/* Inputs */
+.wpaia-card input[type="text"],
+.wpaia-card input[type="email"],
+.wpaia-card input[type="url"],
+.wpaia-card input[type="password"],
+.wpaia-card input[type="number"],
+.wpaia-card select,
+.wpaia-card textarea {
+    border: 1px solid var(--wpaia-gray-300);
+    border-radius: var(--wpaia-radius-sm);
+    padding: 8px 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.wpaia-card input:focus,
+.wpaia-card select:focus,
+.wpaia-card textarea:focus {
+    border-color: var(--wpaia-accent);
+    box-shadow: 0 0 0 3px rgba(236, 106, 109, 0.15);
+    outline: none;
+}
+
+/* Buttons */
+.wpaia-card .button {
+    border-radius: var(--wpaia-radius-sm);
+    transition: all 0.2s;
+}
+
+.wpaia-card .button-primary,
+.wpaia-admin-wrap .button-primary {
+    background: var(--wpaia-accent) !important;
+    border-color: var(--wpaia-accent) !important;
+    color: var(--wpaia-white) !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.wpaia-card .button-primary:hover,
+.wpaia-admin-wrap .button-primary:hover {
+    background: var(--wpaia-accent-hover) !important;
+    border-color: var(--wpaia-accent-hover) !important;
 }
 
 /* API Key Field */
@@ -126,15 +388,15 @@
 
 .wpaia-test-result {
     margin-left: 12px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .wpaia-test-result.success {
-    color: #00a32a;
+    color: var(--wpaia-success);
 }
 
 .wpaia-test-result.error {
-    color: #d63638;
+    color: var(--wpaia-error);
 }
 
 /* Color Picker */
@@ -145,47 +407,220 @@
 /* Sidebar */
 .wpaia-admin-sidebar .wpaia-card {
     position: sticky;
-    top: 32px;
+    top: 48px;
 }
 
-.wpaia-admin-sidebar ol {
+/* Quick Start Card */
+.wpaia-quickstart-card {
+    background: linear-gradient(135deg, var(--wpaia-gray-50) 0%, var(--wpaia-white) 100%);
+    border: 2px solid var(--wpaia-gray-200);
+}
+
+.wpaia-quickstart-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wpaia-quickstart-card ol {
     margin: 0 0 16px 0;
     padding-left: 20px;
+    color: var(--wpaia-gray-700);
 }
 
-.wpaia-admin-sidebar li {
-    margin-bottom: 8px;
+.wpaia-quickstart-card li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.wpaia-quickstart-card a {
+    color: var(--wpaia-accent);
+    text-decoration: none;
+}
+
+.wpaia-quickstart-card a:hover {
+    text-decoration: underline;
+}
+
+/* Support Card */
+.wpaia-support-card {
+    background: var(--wpaia-primary);
+    color: var(--wpaia-white);
+    border: none;
+}
+
+.wpaia-support-card h3 {
+    color: var(--wpaia-white);
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.wpaia-support-card p {
+    opacity: 0.9;
+    margin-bottom: 16px;
+}
+
+.wpaia-support-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.wpaia-support-links a {
+    color: var(--wpaia-white);
+    text-decoration: none;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--wpaia-radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+    font-size: 13px;
+}
+
+.wpaia-support-links a:hover {
+    background: var(--wpaia-accent);
+}
+
+.wpaia-support-links .dashicons {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
 }
 
 /* Preview Widget */
 .wpaia-preview-widget {
     display: flex;
     justify-content: center;
-    padding: 20px;
-    background: #f0f0f1;
-    border-radius: 8px;
+    padding: 24px;
+    background: var(--wpaia-gray-100);
+    border-radius: var(--wpaia-radius-sm);
+    margin-top: 16px;
 }
 
 .wpaia-preview-bubble {
-    width: 56px;
-    height: 56px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: var(--wpaia-white);
+    box-shadow: var(--wpaia-shadow-lg);
     transition: 0.3s;
 }
 
 .wpaia-preview-bubble:hover {
-    transform: scale(1.05);
+    transform: scale(1.08);
 }
 
 .wpaia-preview-bubble .dashicons {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+}
+
+/* License Card */
+.wpaia-license-card {
+    background: var(--wpaia-primary);
+    color: var(--wpaia-white);
+    border: none;
+}
+
+.wpaia-license-card h3 {
+    color: var(--wpaia-white);
+    border-bottom-color: rgba(255,255,255,0.2);
+}
+
+.wpaia-license-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.wpaia-license-active {
+    color: var(--wpaia-success);
+}
+
+.wpaia-license-inactive {
+    color: rgba(255,255,255,0.7);
+}
+
+.wpaia-license-email {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-bottom: 8px;
+}
+
+.wpaia-license-card input.regular-text {
+    width: 100%;
+    margin-bottom: 12px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--wpaia-white);
+}
+
+.wpaia-license-card input.regular-text::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.wpaia-premium-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 16px 0;
+    font-size: 13px;
+}
+
+.wpaia-premium-features li {
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wpaia-premium-features li::before {
+    content: '✓';
+    color: var(--wpaia-accent);
+    font-weight: bold;
+}
+
+.wpaia-license-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.wpaia-license-card .button {
+    flex: 1;
+    text-align: center;
+    background: var(--wpaia-accent) !important;
+    border-color: var(--wpaia-accent) !important;
+    color: var(--wpaia-white) !important;
+}
+
+/* Footer */
+.wpaia-admin-footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--wpaia-gray-500);
+    font-size: 13px;
+    margin-top: 24px;
+    border-top: 1px solid var(--wpaia-gray-200);
+}
+
+.wpaia-admin-footer a {
+    color: var(--wpaia-accent);
+    text-decoration: none;
+}
+
+.wpaia-admin-footer a:hover {
+    text-decoration: underline;
+}
+
+.wpaia-admin-footer .wpaia-heart {
+    color: var(--wpaia-accent);
 }
 
 /* Responsive */
@@ -201,77 +636,31 @@
     .wpaia-admin-sidebar .wpaia-card {
         position: static;
     }
+    
+    .wpaia-admin-header {
+        margin: -10px -10px 20px -10px;
+        padding: 20px;
+    }
 }
 
 @media (max-width: 782px) {
     .wpaia-card .form-table th {
         width: auto;
         display: block;
-        padding-bottom: 4px;
+        padding-bottom: 8px;
     }
     
     .wpaia-card .form-table td {
         display: block;
         padding-top: 0;
     }
-}
-
-/* License Card */
-.wpaia-license-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-}
-
-.wpaia-license-card h3 {
-    color: #fff;
-    border-bottom-color: rgba(255,255,255,0.2);
-}
-
-.wpaia-license-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-.wpaia-license-active {
-    color: #90EE90;
-}
-
-.wpaia-license-inactive {
-    color: rgba(255,255,255,0.8);
-}
-
-.wpaia-license-email {
-    font-size: 12px;
-    opacity: 0.8;
-    margin-bottom: 8px;
-}
-
-.wpaia-license-card input.regular-text {
-    width: 100%;
-    margin-bottom: 12px;
-}
-
-.wpaia-premium-features {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 16px 0;
-    font-size: 13px;
-}
-
-.wpaia-premium-features li {
-    padding: 4px 0;
-}
-
-.wpaia-license-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.wpaia-license-card .button {
-    flex: 1;
-    text-align: center;
+    
+    .wpaia-admin-header-left {
+        width: 100%;
+    }
+    
+    .wpaia-admin-header-right {
+        width: 100%;
+        justify-content: center;
+    }
 }

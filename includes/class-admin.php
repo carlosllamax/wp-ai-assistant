@@ -195,7 +195,35 @@ class WPAIA_Admin {
         $options = get_option('wpaia_settings', array());
         ?>
         <div class="wrap wpaia-admin-wrap">
-            <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+            <!-- Admin Header -->
+            <div class="wpaia-admin-header">
+                <div class="wpaia-admin-header-left">
+                    <div class="wpaia-admin-logo">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                        </svg>
+                    </div>
+                    <div class="wpaia-admin-title">
+                        <h1>WP AI Assistant</h1>
+                        <p><?php _e('AI-powered chat for your WordPress site', 'wp-ai-assistant'); ?></p>
+                    </div>
+                    <span class="wpaia-admin-version">v<?php echo WPAIA_VERSION; ?></span>
+                </div>
+                <div class="wpaia-admin-header-right">
+                    <a href="https://carlosllamax.com/wp-ai-assistant/" target="_blank">
+                        <span class="dashicons dashicons-book"></span>
+                        <?php _e('Docs', 'wp-ai-assistant'); ?>
+                    </a>
+                    <a href="https://carlosllamax.com/contacto/" target="_blank">
+                        <span class="dashicons dashicons-email"></span>
+                        <?php _e('Support', 'wp-ai-assistant'); ?>
+                    </a>
+                    <a href="https://carlosllamax.com/" target="_blank" class="wpaia-btn-accent">
+                        <span class="dashicons dashicons-external"></span>
+                        carlosllamax.com
+                    </a>
+                </div>
+            </div>
             
             <div class="wpaia-admin-container">
                 <div class="wpaia-admin-main">
@@ -607,15 +635,27 @@ class WPAIA_Admin {
                                 </tr>
                                 <tr>
                                     <th scope="row">
-                                        <label for="wpaia_hide_branding"><?php _e('Hide Branding', 'wp-ai-assistant'); ?></label>
+                                        <label for="wpaia_hide_branding">
+                                            <?php _e('Hide Branding', 'wp-ai-assistant'); ?>
+                                            <span class="wpaia-premium-badge"><?php _e('PRO', 'wp-ai-assistant'); ?></span>
+                                        </label>
                                     </th>
                                     <td>
-                                        <label>
+                                        <label class="wpaia-switch">
                                             <input type="checkbox" name="wpaia_settings[hide_branding]" id="wpaia_hide_branding" value="1" 
-                                                   <?php checked(!empty($options['hide_branding'])); ?>>
-                                            <?php _e('Hide "Powered by" footer', 'wp-ai-assistant'); ?>
+                                                   <?php checked(!empty($options['hide_branding'])); ?>
+                                                   <?php disabled(!WP_AI_Assistant::has_valid_license()); ?>>
+                                            <span class="wpaia-slider"></span>
                                         </label>
-                                        <p class="description"><?php _e('Premium feature - Remove branding from the chat widget.', 'wp-ai-assistant'); ?></p>
+                                        <?php if (!WP_AI_Assistant::has_valid_license()): ?>
+                                        <p class="description wpaia-premium-notice">
+                                            <span class="dashicons dashicons-lock"></span>
+                                            <?php _e('Requires a valid license. ', 'wp-ai-assistant'); ?>
+                                            <a href="https://carlosllamax.com/wp-ai-assistant/" target="_blank"><?php _e('Get a license', 'wp-ai-assistant'); ?></a>
+                                        </p>
+                                        <?php else: ?>
+                                        <p class="description"><?php _e('Hide "Powered by carlosllamax.com" from the chat widget footer.', 'wp-ai-assistant'); ?></p>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             </table>
@@ -627,68 +667,74 @@ class WPAIA_Admin {
                 
                 <!-- Sidebar -->
                 <div class="wpaia-admin-sidebar">
-                    <!-- License Card -->
-                    <div class="wpaia-card wpaia-license-card">
-                        <h3><?php _e('Premium License', 'wp-ai-assistant'); ?></h3>
-                        <?php 
-                        $license_key = get_option('wpaia_license_key', '');
-                        $license_email = get_option('wpaia_license_email', '');
-                        $is_valid = WP_AI_Assistant::has_valid_license();
-                        
-                        if ($is_valid): ?>
-                            <div class="wpaia-license-status wpaia-license-active">
-                                <span class="dashicons dashicons-yes-alt"></span>
-                                <?php _e('License Active', 'wp-ai-assistant'); ?>
-                            </div>
-                            <p class="wpaia-license-email"><?php echo esc_html($license_email); ?></p>
-                            <input type="text" value="<?php echo esc_attr(substr($license_key, 0, 8)); ?>********" readonly class="regular-text">
-                            <button type="button" class="button wpaia-deactivate-license">
-                                <?php _e('Deactivate', 'wp-ai-assistant'); ?>
-                            </button>
-                        <?php else: ?>
-                            <div class="wpaia-license-status wpaia-license-inactive">
-                                <span class="dashicons dashicons-lock"></span>
-                                <?php _e('No License', 'wp-ai-assistant'); ?>
-                            </div>
-                            <p><?php _e('Unlock premium features:', 'wp-ai-assistant'); ?></p>
-                            <ul class="wpaia-premium-features">
-                                <li>Remove branding footer</li>
-                                <li>Priority support</li>
-                                <li>Future premium features</li>
-                            </ul>
-                            <input type="text" id="wpaia_license_key_input" placeholder="Enter license key" class="regular-text">
-                            <div class="wpaia-license-buttons">
-                                <button type="button" class="button button-primary wpaia-activate-license">
-                                    <?php _e('Activate', 'wp-ai-assistant'); ?>
-                                </button>
-                                <a href="https://carlosllamax.com/plugins/wp-ai-assistant#pricing" target="_blank" class="button">
-                                    Buy License - 99 EUR
-                                </a>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="wpaia-card">
-                        <h3><?php _e('Quick Start', 'wp-ai-assistant'); ?></h3>
+                    <!-- Quick Start Card -->
+                    <div class="wpaia-card wpaia-quickstart-card">
+                        <h3>
+                            <span class="dashicons dashicons-welcome-learn-more"></span>
+                            <?php _e('Quick Start', 'wp-ai-assistant'); ?>
+                        </h3>
                         <ol>
-                            <li><?php _e('Get a free API key from Groq', 'wp-ai-assistant'); ?></li>
+                            <li><?php printf(__('Get a free API key from %s', 'wp-ai-assistant'), '<a href="https://console.groq.com/keys" target="_blank">Groq</a>'); ?></li>
                             <li><?php _e('Paste your API key above', 'wp-ai-assistant'); ?></li>
                             <li><?php _e('Enable the assistant', 'wp-ai-assistant'); ?></li>
                             <li><?php _e('Customize the appearance', 'wp-ai-assistant'); ?></li>
                         </ol>
-                        <a href="https://console.groq.com/keys" target="_blank" class="button button-primary">
+                        <a href="https://console.groq.com/keys" target="_blank" class="button button-primary" style="width: 100%; text-align: center;">
                             <?php _e('Get Free Groq API Key', 'wp-ai-assistant'); ?>
                         </a>
                     </div>
                     
+                    <!-- Preview Card -->
                     <div class="wpaia-card">
-                        <h3><?php _e('Preview', 'wp-ai-assistant'); ?></h3>
+                        <h3><?php _e('Widget Preview', 'wp-ai-assistant'); ?></h3>
+                        <p class="description"><?php _e('This is how your chat button will look.', 'wp-ai-assistant'); ?></p>
                         <div class="wpaia-preview-widget">
-                            <div class="wpaia-preview-bubble" style="background-color: <?php echo esc_attr($options['primary_color'] ?? '#0073aa'); ?>">
+                            <div class="wpaia-preview-bubble" style="background-color: <?php echo esc_attr($options['primary_color'] ?? '#EC6A6D'); ?>">
                                 <span class="dashicons dashicons-format-chat"></span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Support Card -->
+                    <div class="wpaia-card wpaia-support-card">
+                        <h3>
+                            <span class="dashicons dashicons-sos"></span>
+                            <?php _e('Need Help?', 'wp-ai-assistant'); ?>
+                        </h3>
+                        <p><?php _e('Get support and stay updated with the latest features.', 'wp-ai-assistant'); ?></p>
+                        <div class="wpaia-support-links">
+                            <a href="https://carlosllamax.com/wp-ai-assistant/" target="_blank">
+                                <span class="dashicons dashicons-book"></span>
+                                <?php _e('Documentation', 'wp-ai-assistant'); ?>
+                            </a>
+                            <a href="https://carlosllamax.com/contacto/" target="_blank">
+                                <span class="dashicons dashicons-email"></span>
+                                <?php _e('Contact Support', 'wp-ai-assistant'); ?>
+                            </a>
+                            <a href="https://github.com/carlosllamax/wp-ai-assistant/issues" target="_blank">
+                                <span class="dashicons dashicons-flag"></span>
+                                <?php _e('Report a Bug', 'wp-ai-assistant'); ?>
+                            </a>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="wpaia-admin-footer">
+                <p>
+                    <?php printf(
+                        __('Made with %s by %s', 'wp-ai-assistant'),
+                        '<span class="wpaia-heart">♥</span>',
+                        '<a href="https://carlosllamax.com" target="_blank">Carlos Llamas</a>'
+                    ); ?>
+                    &nbsp;|&nbsp;
+                    <a href="https://carlosllamax.com/wp-ai-assistant/" target="_blank"><?php _e('Plugin Page', 'wp-ai-assistant'); ?></a>
+                    &nbsp;|&nbsp;
+                    <a href="https://github.com/carlosllamax/wp-ai-assistant" target="_blank">GitHub</a>
+                    &nbsp;|&nbsp;
+                    v<?php echo WPAIA_VERSION; ?>
+                </p>
             </div>
         </div>
         <?php

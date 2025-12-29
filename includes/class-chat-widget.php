@@ -223,8 +223,11 @@ class WPAIA_Chat_Widget {
                     </button>
                 </div>
                 
-                <!-- Powered by -->
-                <?php if (!WP_AI_Assistant::get_option('hide_branding')): ?>
+                <!-- Powered by (only hidden with valid license) -->
+                <?php 
+                $can_hide_branding = WP_AI_Assistant::get_option('hide_branding') && WP_AI_Assistant::has_valid_license();
+                if (!$can_hide_branding): 
+                ?>
                 <div class="wpaia-powered">
                     <span><?php _e('Powered by', 'wp-ai-assistant'); ?> <a href="https://carlosllamax.com" target="_blank" rel="noopener">carlosllamax.com</a></span>
                 </div>
