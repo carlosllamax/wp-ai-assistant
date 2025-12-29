@@ -18,9 +18,20 @@ class WPAIA_Conversation {
     private const SESSION_KEY = 'wpaia_conversation';
     
     /**
-     * Max history messages
+     * Max history messages (fallback)
      */
     private const MAX_HISTORY = 20;
+    
+    /**
+     * Max tokens for context (approximate)
+     * Most models support 4k-8k context, we use ~3k for safety
+     */
+    private const MAX_CONTEXT_TOKENS = 3000;
+    
+    /**
+     * Average chars per token (rough estimate)
+     */
+    private const CHARS_PER_TOKEN = 4;
     
     /**
      * Get conversation ID
@@ -50,15 +61,46 @@ class WPAIA_Conversation {
             'role' => $role,
             'content' => $content,
             'timestamp' => time(),
+            'tokens' => self::estimate_tokens($content),
         );
         
-        // Keep only last N messages
+        // Trim history to fit within token limit
+        $history = self::trim_to_token_limit($history);
+        
+        // Store for 1 hour
+        set_transient(self::SESSION_KEY . '_' . $conversation_id, $history, HOUR_IN_SECONDS);
+    }
+    
+    /**
+     * Estimate tokens for a string
+     */
+    public static function estimate_tokens(string $text): int {
+        return (int) ceil(mb_strlen($text) / self::CHARS_PER_TOKEN);
+    }
+    
+    /**
+     * Trim history to fit within token limit
+     */
+    private static function trim_to_token_limit(array $history): array {
+        $total_tokens = 0;
+        
+        // Calculate total tokens
+        foreach ($history as $msg) {
+            $total_tokens += $msg['tokens'] ?? self::estimate_tokens($msg['content']);
+        }
+        
+        // Remove oldest messages until within limit
+        while ($total_tokens > self::MAX_CONTEXT_TOKENS && count($history) > 2) {
+            $removed = array_shift($history);
+            $total_tokens -= $removed['tokens'] ?? self::estimate_tokens($removed['content']);
+        }
+        
+        // Also enforce max message count as secondary limit
         if (count($history) > self::MAX_HISTORY) {
             $history = array_slice($history, -self::MAX_HISTORY);
         }
         
-        // Store for 1 hour
-        set_transient(self::SESSION_KEY . '_' . $conversation_id, $history, HOUR_IN_SECONDS);
+        return $history;
     }
     
     /**
@@ -108,5 +150,19 @@ class WPAIA_Conversation {
     public static function get_verified_order(string $conversation_id): ?array {
         $verified = get_transient('wpaia_verified_' . $conversation_id);
         return is_array($verified) ? $verified : null;
+    }
+    
+    /**
+     * Get current token usage for a conversation
+     */
+    public static function get_token_usage(string $conversation_id): int {
+        $history = self::get_history($conversation_id);
+        $total = 0;
+        
+        foreach ($history as $msg) {
+            $total += $msg['tokens'] ?? self::estimate_tokens($msg['content']);
+        }
+        
+        return $total;
     }
 }

@@ -24,6 +24,44 @@
     let widget, chatWindow, messagesContainer, input, sendBtn, toggleBtn, orderBtn, orderForm, leadForm;
 
     /**
+     * Dispatch analytics event for GA/GTM tracking
+     * 
+     * @param {string} eventName - The event name (e.g., 'wpaia_chat_open')
+     * @param {object} eventData - Additional event data
+     */
+    function trackEvent(eventName, eventData = {}) {
+        // Dispatch custom event for GA4/GTM
+        const event = new CustomEvent(eventName, {
+            detail: {
+                ...eventData,
+                conversationId: state.conversationId,
+                timestamp: new Date().toISOString()
+            },
+            bubbles: true
+        });
+        document.dispatchEvent(event);
+        
+        // Also push to dataLayer if GTM is available
+        if (window.dataLayer) {
+            window.dataLayer.push({
+                event: eventName,
+                wpaia: {
+                    ...eventData,
+                    conversationId: state.conversationId
+                }
+            });
+        }
+        
+        // Also trigger gtag if GA4 is available directly
+        if (window.gtag) {
+            window.gtag('event', eventName.replace('wpaia_', ''), {
+                event_category: 'wp_ai_assistant',
+                ...eventData
+            });
+        }
+    }
+
+    /**
      * Initialize widget
      */
     function init() {
@@ -120,6 +158,11 @@
         
         if (state.isOpen) {
             input.focus();
+            // Track chat open event
+            trackEvent('wpaia_chat_open', {
+                page_url: window.location.href,
+                page_title: document.title
+            });
         }
     }
 
@@ -170,6 +213,12 @@
             if (data.success !== false && data.message) {
                 addMessage('assistant', data.message);
                 state.messageCount++;
+                
+                // Track message sent event
+                trackEvent('wpaia_message_sent', {
+                    message_count: state.messageCount,
+                    message_length: message.length
+                });
             } else {
                 addMessage('assistant', data.message || config.strings.error);
             }
@@ -207,9 +256,12 @@
     }
 
     /**
-     * Format message content
+     * Format message content (sanitized)
      */
     function formatMessage(content) {
+        // First, escape HTML to prevent XSS
+        content = escapeHtml(content);
+        
         // Convert line breaks
         content = content.replace(/\n/g, '<br>');
         
@@ -222,14 +274,29 @@
         // Code `code`
         content = content.replace(/`(.*?)`/g, '<code>$1</code>');
         
-        // Links [text](url)
-        content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+        // Links [text](url) - validate URL before creating link
+        content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, url) {
+            // Only allow http, https, and relative URLs
+            if (url.match(/^(https?:\/\/|\/)/i)) {
+                return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
+            }
+            return text;
+        });
         
         // Lists - item
         content = content.replace(/^- (.+)$/gm, '<li>$1</li>');
         content = content.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
         
         return content;
+    }
+    
+    /**
+     * Escape HTML entities to prevent XSS
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     /**
@@ -329,9 +396,22 @@
     }
 
     /**
-     * Generate UUID
+     * Generate UUID (cryptographically secure)
      */
     function generateUUID() {
+        // Use crypto.randomUUID if available (modern browsers)
+        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+            return crypto.randomUUID();
+        }
+        
+        // Fallback using crypto.getRandomValues for older browsers
+        if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+            return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, function(c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        }
+        
+        // Last resort fallback (less secure, but functional)
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -399,10 +479,20 @@
         const emailInput = leadForm.querySelector('#wpaia-lead-email');
         const phoneInput = leadForm.querySelector('#wpaia-lead-phone');
         const nameInput = leadForm.querySelector('#wpaia-lead-name');
+        const gdprCheckbox = leadForm.querySelector('#wpaia-gdpr-checkbox');
+        const gdprConsent = leadForm.querySelector('.wpaia-gdpr-consent');
         
         const email = emailInput ? emailInput.value.trim() : '';
         const phone = phoneInput ? phoneInput.value.trim() : '';
         const name = nameInput ? nameInput.value.trim() : '';
+        
+        // Validate GDPR consent if enabled
+        if (config.gdpr && config.gdpr.enabled && gdprCheckbox && !gdprCheckbox.checked) {
+            if (gdprConsent) gdprConsent.classList.add('wpaia-gdpr-error');
+            gdprCheckbox.focus();
+            return;
+        }
+        if (gdprConsent) gdprConsent.classList.remove('wpaia-gdpr-error');
         
         // Validate - at least email or phone required
         if (!email && !phone) {
@@ -428,6 +518,7 @@
             formData.append('phone', phone);
             formData.append('name', name);
             formData.append('page_url', window.location.href);
+            formData.append('gdpr_consent', gdprCheckbox && gdprCheckbox.checked ? '1' : '0');
             
             const response = await fetch(config.ajaxUrl, {
                 method: 'POST',
@@ -440,6 +531,15 @@
                 state.leadCaptured = true;
                 localStorage.setItem('wpaia_lead_captured_' + state.conversationId, 'true');
                 hideLeadForm();
+                
+                // Track lead captured event
+                trackEvent('wpaia_lead_captured', {
+                    has_email: !!email,
+                    has_phone: !!phone,
+                    has_name: !!name,
+                    gdpr_consent: gdprCheckbox && gdprCheckbox.checked,
+                    page_url: window.location.href
+                });
                 
                 // Show thank you message
                 addMessage('assistant', config.strings.thanks || 'Thank you! How can I help you?');

@@ -14,7 +14,7 @@ class WPAIA_Database {
     /**
      * Database version
      */
-    const DB_VERSION = '1.0.0';
+    const DB_VERSION = '1.1.0';
 
     /**
      * Create database tables on activation
@@ -35,6 +35,8 @@ class WPAIA_Database {
             ip_address varchar(45) DEFAULT NULL,
             user_agent text DEFAULT NULL,
             page_url text DEFAULT NULL,
+            gdpr_consent tinyint(1) DEFAULT 0,
+            gdpr_consent_at datetime DEFAULT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
@@ -111,6 +113,8 @@ class WPAIA_Database {
             $wpdb->prepare("SELECT id FROM $table WHERE session_id = %s", $session_id)
         );
         
+        $gdpr_consent = !empty($data['gdpr_consent']) ? 1 : 0;
+        
         $lead_data = array(
             'session_id' => $session_id,
             'email' => sanitize_email($data['email'] ?? ''),
@@ -119,7 +123,13 @@ class WPAIA_Database {
             'ip_address' => self::get_client_ip(),
             'user_agent' => sanitize_text_field($_SERVER['HTTP_USER_AGENT'] ?? ''),
             'page_url' => esc_url_raw($data['page_url'] ?? ''),
+            'gdpr_consent' => $gdpr_consent,
         );
+        
+        // Set GDPR consent timestamp if consented
+        if ($gdpr_consent) {
+            $lead_data['gdpr_consent_at'] = current_time('mysql');
+        }
         
         if ($existing) {
             // Update existing lead
@@ -307,7 +317,7 @@ class WPAIA_Database {
     /**
      * Get client IP address
      */
-    private static function get_client_ip() {
+    public static function get_client_ip() {
         $ip_keys = array(
             'HTTP_CF_CONNECTING_IP', // Cloudflare
             'HTTP_X_FORWARDED_FOR',
@@ -357,5 +367,119 @@ class WPAIA_Database {
             )),
             'total_messages' => (int) $wpdb->get_var("SELECT COUNT(*) FROM $conv_table"),
         );
+    }
+
+    /**
+     * GDPR: Export user data by email
+     * 
+     * @param string $email User email
+     * @return array User data for export
+     */
+    public static function export_user_data($email) {
+        global $wpdb;
+        
+        $email = sanitize_email($email);
+        if (empty($email)) {
+            return array();
+        }
+        
+        $leads_table = self::get_leads_table();
+        $conv_table = self::get_conversations_table();
+        
+        // Get lead data
+        $lead = $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM $leads_table WHERE email = %s", $email),
+            ARRAY_A
+        );
+        
+        if (!$lead) {
+            return array();
+        }
+        
+        // Get conversation data
+        $conversations = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT role, message, created_at FROM $conv_table WHERE session_id = %s ORDER BY created_at ASC",
+                $lead['session_id']
+            ),
+            ARRAY_A
+        );
+        
+        return array(
+            'lead' => array(
+                'name' => $lead['name'],
+                'email' => $lead['email'],
+                'phone' => $lead['phone'],
+                'page_url' => $lead['page_url'],
+                'gdpr_consent' => $lead['gdpr_consent'] ? 'Yes' : 'No',
+                'gdpr_consent_at' => $lead['gdpr_consent_at'],
+                'created_at' => $lead['created_at'],
+            ),
+            'conversations' => $conversations,
+        );
+    }
+
+    /**
+     * GDPR: Delete user data by email
+     * 
+     * @param string $email User email
+     * @return bool Success
+     */
+    public static function delete_user_data($email) {
+        global $wpdb;
+        
+        $email = sanitize_email($email);
+        if (empty($email)) {
+            return false;
+        }
+        
+        $leads_table = self::get_leads_table();
+        $conv_table = self::get_conversations_table();
+        
+        // Get lead to find session_id
+        $lead = $wpdb->get_row(
+            $wpdb->prepare("SELECT id, session_id FROM $leads_table WHERE email = %s", $email)
+        );
+        
+        if (!$lead) {
+            return false;
+        }
+        
+        // Delete conversations
+        $wpdb->delete($conv_table, array('session_id' => $lead->session_id));
+        
+        // Delete lead
+        $wpdb->delete($leads_table, array('id' => $lead->id));
+        
+        return true;
+    }
+
+    /**
+     * GDPR: Anonymize user data by email (alternative to deletion)
+     * 
+     * @param string $email User email
+     * @return bool Success
+     */
+    public static function anonymize_user_data($email) {
+        global $wpdb;
+        
+        $email = sanitize_email($email);
+        if (empty($email)) {
+            return false;
+        }
+        
+        $leads_table = self::get_leads_table();
+        
+        return $wpdb->update(
+            $leads_table,
+            array(
+                'email' => 'anonymized@deleted.user',
+                'phone' => '',
+                'name' => 'Anonymized User',
+                'ip_address' => '0.0.0.0',
+                'user_agent' => '',
+            ),
+            array('email' => $email)
+        ) !== false;
     }
 }

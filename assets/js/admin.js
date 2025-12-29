@@ -239,6 +239,15 @@
             }
         });
 
+        // GDPR consent toggle
+        $('#wpaia_gdpr_consent_enabled').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('.wpaia-gdpr-option').slideDown();
+            } else {
+                $('.wpaia-gdpr-option').slideUp();
+            }
+        });
+
         // Check for updates link
         $(document).on('click', '.wpaia-check-update', function(e) {
             e.preventDefault();

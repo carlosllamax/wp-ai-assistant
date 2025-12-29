@@ -5,6 +5,56 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2024-12-29
+
+### Added
+- **Anthropic Claude Provider**: Full support for Claude 3.5 Sonnet, Haiku, and Opus models
+- **GDPR Compliance**: 
+  - Consent checkbox in lead capture form
+  - Export user data by email
+  - Delete/anonymize user data
+  - Privacy policy link configuration
+- **Analytics Events**: Custom events for Google Analytics 4 / GTM integration
+  - `wpaia_chat_open` - When chat widget is opened
+  - `wpaia_message_sent` - When a message is sent
+  - `wpaia_lead_captured` - When lead information is submitted
+- **CRM Webhooks**: Action hooks for external integrations
+  - `wpaia_lead_captured` - Fires when a new lead is captured
+  - `wpaia_message_sent` - Fires after each message exchange
+- **Error Logging System**: New logging class with database storage
+  - Log levels: debug, info, warning, error
+  - API error tracking with context
+  - Auto-cleanup (keeps last 1000 entries)
+- **Uninstall Cleanup**: Complete data removal on plugin uninstall
+  - Removes all options and transients
+  - Drops custom database tables
+  - Cleans up scheduled cron jobs
+
+### Changed
+- **Token Management**: Automatic context trimming to prevent token overflow
+  - Estimates tokens per message
+  - Trims oldest messages when limit exceeded
+  - Configurable max tokens (default 3000)
+- **Rate Limiting**: Dual rate limiting by IP and conversation ID
+- **Accessibility**: Enhanced ARIA labels, roles, and keyboard navigation
+  - `role="dialog"` on chat window
+  - `role="log"` on messages container
+  - `aria-live="polite"` for screen reader updates
+  - Proper labels on all interactive elements
+
+### Security
+- **XSS Prevention**: HTML escaping before markdown conversion in chat messages
+- **Input Validation**: 
+  - Email validation with `is_email()`
+  - Phone format validation with regex
+  - Message length limit (1000 characters)
+  - Conversation ID format validation (UUID)
+- **Secure Session IDs**: Using `crypto.randomUUID()` with secure fallbacks
+
+### Fixed
+- Update checker now uses GitHub automatic ZIP URLs
+- Rate limit bypass through conversation ID manipulation
+
 ## [1.2.0] - 2024-12-29
 
 ### Added

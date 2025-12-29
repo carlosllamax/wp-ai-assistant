@@ -41,11 +41,26 @@ class WPAIA_REST_API {
                     'required' => true,
                     'type' => 'string',
                     'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => function($value) {
+                        if (empty($value)) {
+                            return new WP_Error('empty_message', __('Message cannot be empty', 'wp-ai-assistant'));
+                        }
+                        if (mb_strlen($value) > 1000) {
+                            return new WP_Error('message_too_long', __('Message is too long (max 1000 characters)', 'wp-ai-assistant'));
+                        }
+                        return true;
+                    },
                 ),
                 'conversation_id' => array(
                     'required' => false,
                     'type' => 'string',
                     'sanitize_callback' => 'sanitize_text_field',
+                    'validate_callback' => function($value) {
+                        if (!empty($value) && !preg_match('/^[a-f0-9\-]{36}$/i', $value)) {
+                            return new WP_Error('invalid_conversation_id', __('Invalid conversation ID format', 'wp-ai-assistant'));
+                        }
+                        return true;
+                    },
                 ),
             ),
         ));
@@ -83,13 +98,13 @@ class WPAIA_REST_API {
             return new WP_Error('disabled', __('AI Assistant is not enabled', 'wp-ai-assistant'), array('status' => 503));
         }
         
-        // Rate limiting
-        if (!$this->check_rate_limit()) {
-            return new WP_Error('rate_limited', __('Too many requests. Please wait a moment.', 'wp-ai-assistant'), array('status' => 429));
-        }
-        
         $message = $request->get_param('message');
         $conversation_id = $request->get_param('conversation_id') ?: WPAIA_Conversation::get_id();
+        
+        // Rate limiting (check both IP and conversation)
+        if (!$this->check_rate_limit($conversation_id)) {
+            return new WP_Error('rate_limited', __('Too many requests. Please wait a moment.', 'wp-ai-assistant'), array('status' => 429));
+        }
         
         // Get provider
         $provider = $this->get_provider();
@@ -119,6 +134,22 @@ class WPAIA_REST_API {
             WPAIA_Database::save_message($conversation_id, 'user', $message);
             WPAIA_Database::save_message($conversation_id, 'assistant', $response['content'], $response['tokens'] ?? 0);
         }
+        
+        /**
+         * Fires after a chat message exchange is completed
+         * 
+         * @param array $message_data Message exchange information including:
+         *   - conversation_id: string
+         *   - user_message: string
+         *   - assistant_response: string
+         *   - tokens_used: int
+         */
+        do_action('wpaia_message_sent', array(
+            'conversation_id' => $conversation_id,
+            'user_message' => $message,
+            'assistant_response' => $response['content'],
+            'tokens_used' => $response['tokens'] ?? 0,
+        ));
         
         return rest_ensure_response(array(
             'success' => true,
@@ -267,6 +298,8 @@ class WPAIA_REST_API {
                 return new WPAIA_Provider_Groq($api_key);
             case 'openai':
                 return new WPAIA_Provider_OpenAI($api_key);
+            case 'anthropic':
+                return new WPAIA_Provider_Anthropic($api_key);
             default:
                 return new WP_Error('invalid_provider', __('Invalid AI provider', 'wp-ai-assistant'));
         }
@@ -275,23 +308,37 @@ class WPAIA_REST_API {
     /**
      * Check rate limit
      */
-    private function check_rate_limit(): bool {
+    private function check_rate_limit(string $conversation_id = ''): bool {
         $rate_limit = WP_AI_Assistant::get_option('rate_limit', 20);
         $ip = $this->get_client_ip();
-        $key = 'wpaia_rate_' . md5($ip);
         
-        $count = get_transient($key);
+        // Rate limit by IP
+        $ip_key = 'wpaia_rate_' . md5($ip);
+        $ip_count = get_transient($ip_key);
         
-        if ($count === false) {
-            set_transient($key, 1, MINUTE_IN_SECONDS);
-            return true;
-        }
-        
-        if ($count >= $rate_limit) {
+        if ($ip_count === false) {
+            set_transient($ip_key, 1, MINUTE_IN_SECONDS);
+        } elseif ($ip_count >= $rate_limit) {
             return false;
+        } else {
+            set_transient($ip_key, $ip_count + 1, MINUTE_IN_SECONDS);
         }
         
-        set_transient($key, $count + 1, MINUTE_IN_SECONDS);
+        // Additional rate limit by conversation_id (prevent context abuse)
+        if (!empty($conversation_id)) {
+            $conv_key = 'wpaia_conv_rate_' . md5($conversation_id);
+            $conv_count = get_transient($conv_key);
+            $conv_limit = $rate_limit * 2; // Allow more per conversation but still limit
+            
+            if ($conv_count === false) {
+                set_transient($conv_key, 1, HOUR_IN_SECONDS);
+            } elseif ($conv_count >= $conv_limit) {
+                return false;
+            } else {
+                set_transient($conv_key, $conv_count + 1, HOUR_IN_SECONDS);
+            }
+        }
+        
         return true;
     }
     
@@ -322,6 +369,7 @@ class WPAIA_REST_API {
         $phone = sanitize_text_field($_POST['phone'] ?? '');
         $name = sanitize_text_field($_POST['name'] ?? '');
         $page_url = esc_url_raw($_POST['page_url'] ?? '');
+        $gdpr_consent = !empty($_POST['gdpr_consent']);
         
         if (empty($session_id)) {
             wp_send_json_error(array('message' => __('Session ID required', 'wp-ai-assistant')));
@@ -331,19 +379,53 @@ class WPAIA_REST_API {
             wp_send_json_error(array('message' => __('Email or phone required', 'wp-ai-assistant')));
         }
         
+        // Validate email format if provided
+        if (!empty($email) && !is_email($email)) {
+            wp_send_json_error(array('message' => __('Invalid email format', 'wp-ai-assistant')));
+        }
+        
+        // Validate phone format if provided (basic validation)
+        if (!empty($phone) && !preg_match('/^[\d\s\+\-\(\)]{6,20}$/', $phone)) {
+            wp_send_json_error(array('message' => __('Invalid phone format', 'wp-ai-assistant')));
+        }
+        
         if (!class_exists('WPAIA_Database')) {
             wp_send_json_error(array('message' => __('Database not available', 'wp-ai-assistant')));
         }
         
-        $lead_id = WPAIA_Database::save_lead(array(
+        $lead_data = array(
             'session_id' => $session_id,
             'email' => $email,
             'phone' => $phone,
             'name' => $name,
             'page_url' => $page_url,
-        ));
+            'gdpr_consent' => $gdpr_consent,
+        );
+        
+        $lead_id = WPAIA_Database::save_lead($lead_data);
         
         if ($lead_id) {
+            // Fire action hook for CRM/webhook integrations
+            $lead_data['lead_id'] = $lead_id;
+            $lead_data['ip_address'] = WPAIA_Database::get_client_ip();
+            $lead_data['created_at'] = current_time('mysql');
+            
+            /**
+             * Fires when a new lead is captured
+             * 
+             * @param array $lead_data Lead information including:
+             *   - lead_id: int
+             *   - session_id: string
+             *   - email: string
+             *   - phone: string
+             *   - name: string
+             *   - page_url: string
+             *   - gdpr_consent: bool
+             *   - ip_address: string
+             *   - created_at: string
+             */
+            do_action('wpaia_lead_captured', $lead_data);
+            
             wp_send_json_success(array(
                 'lead_id' => $lead_id,
                 'message' => __('Thank you! Your information has been saved.', 'wp-ai-assistant')

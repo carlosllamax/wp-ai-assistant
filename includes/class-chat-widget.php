@@ -49,6 +49,12 @@ class WPAIA_Chat_Widget {
             'position' => WP_AI_Assistant::get_option('widget_position', 'bottom-right'),
             'primaryColor' => WP_AI_Assistant::get_option('primary_color', '#0073aa'),
             'enableOrderLookup' => WP_AI_Assistant::get_option('enable_order_lookup') && class_exists('WooCommerce'),
+            'gdpr' => array(
+                'enabled' => WP_AI_Assistant::get_option('gdpr_consent_enabled', false),
+                'text' => WP_AI_Assistant::get_option('gdpr_consent_text', '') ?: __('I agree to the storage of my data for support purposes.', 'wp-ai-assistant'),
+                'linkText' => WP_AI_Assistant::get_option('gdpr_link_text', '') ?: __('Privacy Policy', 'wp-ai-assistant'),
+                'linkUrl' => WP_AI_Assistant::get_option('gdpr_link_url', '') ?: get_privacy_policy_url(),
+            ),
             'leadCapture' => array(
                 'enabled' => WP_AI_Assistant::get_option('lead_capture_enabled', false),
                 'mode' => WP_AI_Assistant::get_option('lead_capture_mode', 'after'),
@@ -106,13 +112,13 @@ class WPAIA_Chat_Widget {
             </button>
             
             <!-- Chat Window -->
-            <div class="wpaia-chat-window">
+            <div class="wpaia-chat-window" role="dialog" aria-labelledby="wpaia-title" aria-describedby="wpaia-subtitle">
                 <!-- Header -->
                 <div class="wpaia-header">
                     <div class="wpaia-header-info">
-                        <div class="wpaia-avatar">
+                        <div class="wpaia-avatar" aria-hidden="true">
                             <?php if (!empty($header_avatar_url)): ?>
-                                <img src="<?php echo esc_url($header_avatar_url); ?>" alt="<?php esc_attr_e('Assistant', 'wp-ai-assistant'); ?>" />
+                                <img src="<?php echo esc_url($header_avatar_url); ?>" alt="" />
                             <?php else: ?>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="3"></circle>
@@ -121,28 +127,28 @@ class WPAIA_Chat_Widget {
                             <?php endif; ?>
                         </div>
                         <div class="wpaia-header-text">
-                            <span class="wpaia-title"><?php echo esc_html($site_name); ?></span>
-                            <span class="wpaia-subtitle"><?php _e('AI Assistant', 'wp-ai-assistant'); ?></span>
+                            <span class="wpaia-title" id="wpaia-title"><?php echo esc_html($site_name); ?></span>
+                            <span class="wpaia-subtitle" id="wpaia-subtitle"><?php _e('AI Assistant', 'wp-ai-assistant'); ?></span>
                         </div>
                     </div>
-                    <button class="wpaia-minimize-btn" aria-label="<?php esc_attr_e('Minimize', 'wp-ai-assistant'); ?>">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="wpaia-minimize-btn" aria-label="<?php esc_attr_e('Minimize chat', 'wp-ai-assistant'); ?>">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                     </button>
                 </div>
                 
                 <!-- Messages -->
-                <div class="wpaia-messages">
+                <div class="wpaia-messages" role="log" aria-live="polite" aria-label="<?php esc_attr_e('Chat messages', 'wp-ai-assistant'); ?>">
                     <!-- Messages will be inserted here -->
                 </div>
                 
                 <!-- Order Verification Form (hidden by default) -->
-                <div class="wpaia-order-form" style="display: none;">
+                <div class="wpaia-order-form" style="display: none;" role="form" aria-labelledby="wpaia-order-title">
                     <div class="wpaia-order-form-inner">
-                        <h4><?php _e('Verify Your Order', 'wp-ai-assistant'); ?></h4>
-                        <input type="text" class="wpaia-order-input" placeholder="<?php esc_attr_e('Order # (e.g., 12345)', 'wp-ai-assistant'); ?>" id="wpaia-order-id">
-                        <input type="email" class="wpaia-order-input" placeholder="<?php esc_attr_e('Email address', 'wp-ai-assistant'); ?>" id="wpaia-order-email">
+                        <h4 id="wpaia-order-title"><?php _e('Verify Your Order', 'wp-ai-assistant'); ?></h4>
+                        <input type="text" class="wpaia-order-input" placeholder="<?php esc_attr_e('Order # (e.g., 12345)', 'wp-ai-assistant'); ?>" id="wpaia-order-id" aria-label="<?php esc_attr_e('Order number', 'wp-ai-assistant'); ?>">
+                        <input type="email" class="wpaia-order-input" placeholder="<?php esc_attr_e('Email address', 'wp-ai-assistant'); ?>" id="wpaia-order-email" aria-label="<?php esc_attr_e('Email address', 'wp-ai-assistant'); ?>">
                         <div class="wpaia-order-buttons">
                             <button type="button" class="wpaia-btn wpaia-btn-cancel"><?php _e('Cancel', 'wp-ai-assistant'); ?></button>
                             <button type="button" class="wpaia-btn wpaia-btn-verify"><?php _e('Verify', 'wp-ai-assistant'); ?></button>
@@ -157,19 +163,40 @@ class WPAIA_Chat_Widget {
                 $lead_capture_title = WP_AI_Assistant::get_option('lead_capture_title', '') ?: __('Stay in touch!', 'wp-ai-assistant');
                 $lead_capture_description = WP_AI_Assistant::get_option('lead_capture_description', '') ?: __('Leave your contact info and we\'ll get back to you.', 'wp-ai-assistant');
                 ?>
-                <div class="wpaia-lead-form" style="display: none;">
+                <div class="wpaia-lead-form" style="display: none;" role="form" aria-labelledby="wpaia-lead-title">
                     <div class="wpaia-lead-form-inner">
-                        <h4><?php echo esc_html($lead_capture_title); ?></h4>
-                        <p class="wpaia-lead-description"><?php echo esc_html($lead_capture_description); ?></p>
+                        <h4 id="wpaia-lead-title"><?php echo esc_html($lead_capture_title); ?></h4>
+                        <p class="wpaia-lead-description" id="wpaia-lead-desc"><?php echo esc_html($lead_capture_description); ?></p>
                         <?php if (in_array('name', $lead_capture_fields)): ?>
-                        <input type="text" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your name', 'wp-ai-assistant'); ?>" id="wpaia-lead-name">
+                        <input type="text" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your name', 'wp-ai-assistant'); ?>" id="wpaia-lead-name" aria-label="<?php esc_attr_e('Your name', 'wp-ai-assistant'); ?>" autocomplete="name">
                         <?php endif; ?>
                         <?php if (in_array('email', $lead_capture_fields)): ?>
-                        <input type="email" class="wpaia-lead-input" placeholder="<?php esc_attr_e('your@email.com', 'wp-ai-assistant'); ?>" id="wpaia-lead-email">
+                        <input type="email" class="wpaia-lead-input" placeholder="<?php esc_attr_e('your@email.com', 'wp-ai-assistant'); ?>" id="wpaia-lead-email" aria-label="<?php esc_attr_e('Email address', 'wp-ai-assistant'); ?>" autocomplete="email">
                         <?php endif; ?>
                         <?php if (in_array('phone', $lead_capture_fields)): ?>
-                        <input type="tel" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your phone number', 'wp-ai-assistant'); ?>" id="wpaia-lead-phone">
+                        <input type="tel" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your phone number', 'wp-ai-assistant'); ?>" id="wpaia-lead-phone" aria-label="<?php esc_attr_e('Phone number', 'wp-ai-assistant'); ?>" autocomplete="tel">
                         <?php endif; ?>
+                        
+                        <!-- GDPR Consent Checkbox -->
+                        <?php 
+                        $gdpr_enabled = WP_AI_Assistant::get_option('gdpr_consent_enabled', false);
+                        $gdpr_text = WP_AI_Assistant::get_option('gdpr_consent_text', '') ?: __('I agree to the storage of my data for support purposes.', 'wp-ai-assistant');
+                        $gdpr_link_text = WP_AI_Assistant::get_option('gdpr_link_text', '') ?: __('Privacy Policy', 'wp-ai-assistant');
+                        $gdpr_link_url = WP_AI_Assistant::get_option('gdpr_link_url', '') ?: get_privacy_policy_url();
+                        if ($gdpr_enabled): ?>
+                        <div class="wpaia-gdpr-consent">
+                            <label>
+                                <input type="checkbox" id="wpaia-gdpr-checkbox" aria-required="true">
+                                <span class="wpaia-gdpr-text">
+                                    <?php echo esc_html($gdpr_text); ?>
+                                    <?php if (!empty($gdpr_link_url)): ?>
+                                    <a href="<?php echo esc_url($gdpr_link_url); ?>" target="_blank" rel="noopener"><?php echo esc_html($gdpr_link_text); ?></a>
+                                    <?php endif; ?>
+                                </span>
+                            </label>
+                        </div>
+                        <?php endif; ?>
+                        
                         <div class="wpaia-lead-buttons">
                             <button type="button" class="wpaia-btn wpaia-btn-skip"><?php _e('Skip', 'wp-ai-assistant'); ?></button>
                             <button type="button" class="wpaia-btn wpaia-btn-submit-lead"><?php _e('Submit', 'wp-ai-assistant'); ?></button>
@@ -187,7 +214,7 @@ class WPAIA_Chat_Widget {
                         </svg>
                     </button>
                     <?php endif; ?>
-                    <input type="text" class="wpaia-input" placeholder="<?php esc_attr_e('Type your message...', 'wp-ai-assistant'); ?>" />
+                    <input type="text" class="wpaia-input" placeholder="<?php esc_attr_e('Type your message...', 'wp-ai-assistant'); ?>" maxlength="1000" aria-label="<?php esc_attr_e('Chat message', 'wp-ai-assistant'); ?>" />
                     <button class="wpaia-send-btn" aria-label="<?php esc_attr_e('Send message', 'wp-ai-assistant'); ?>">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="22" y1="2" x2="11" y2="13"></line>

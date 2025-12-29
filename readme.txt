@@ -4,7 +4,7 @@ Tags: ai, chatbot, assistant, groq, openai, woocommerce, customer support
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,15 +16,19 @@ WP AI Assistant adds an intelligent chatbot to your WordPress site that can answ
 
 **Features:**
 
-* 🤖 Multiple AI providers: Groq (free!), OpenAI, Anthropic
+* 🤖 Multiple AI providers: Groq (free!), OpenAI, Anthropic (Claude)
 * 🔑 BYOK (Bring Your Own Key) - use your own API keys
 * 🛒 WooCommerce integration - product info & order lookup
 * 🔐 Secure order verification (order # + email required)
+* 📊 Lead capture with GDPR consent
+* 💾 Conversation storage and export
 * 🌐 Multilingual support (WPML/Polylang ready)
 * 🎨 Customizable appearance (colors, position, messages)
 * 📱 Fully responsive design
 * 💬 Conversation history
 * 🚦 Rate limiting to prevent abuse
+* 📈 Analytics events for GA4/GTM
+* 🔗 CRM webhooks for integrations
 
 **How it works:**
 
@@ -81,6 +85,13 @@ Yes! You can:
 
 Yes! The plugin is translation-ready and will respond in the user's language when WPML or Polylang is active.
 
+= Is it GDPR compliant? =
+
+Yes! The plugin includes GDPR features:
+- Consent checkbox for lead capture
+- Data export functionality
+- Data deletion/anonymization
+
 == Screenshots ==
 
 1. Chat widget on frontend
@@ -89,6 +100,25 @@ Yes! The plugin is translation-ready and will respond in the user's language whe
 4. Mobile responsive design
 
 == Changelog ==
+
+= 1.3.0 =
+* Added Anthropic Claude provider (Sonnet, Haiku, Opus)
+* Added GDPR compliance features (consent, export, delete)
+* Added analytics events for GA4/GTM integration
+* Added CRM webhooks (wpaia_lead_captured, wpaia_message_sent)
+* Added error logging system with database storage
+* Added token management with automatic context trimming
+* Added complete uninstall cleanup
+* Enhanced accessibility with ARIA labels and roles
+* Security: XSS prevention in chat messages
+* Security: Improved input validation (email, phone, message length)
+* Security: Secure session ID generation
+* Security: Dual rate limiting (IP + conversation)
+
+= 1.2.0 =
+* Added conversation storage to database
+* Added lead capture system
+* Added conversations admin page with search and export
 
 = 1.0.0 =
 * Initial release

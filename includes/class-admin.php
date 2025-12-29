@@ -120,6 +120,12 @@ class WPAIA_Admin {
         $sanitized['lead_capture_title'] = sanitize_text_field($input['lead_capture_title'] ?? '');
         $sanitized['lead_capture_description'] = sanitize_text_field($input['lead_capture_description'] ?? '');
         
+        // GDPR settings
+        $sanitized['gdpr_consent_enabled'] = !empty($input['gdpr_consent_enabled']);
+        $sanitized['gdpr_consent_text'] = sanitize_text_field($input['gdpr_consent_text'] ?? '');
+        $sanitized['gdpr_link_text'] = sanitize_text_field($input['gdpr_link_text'] ?? '');
+        $sanitized['gdpr_link_url'] = esc_url_raw($input['gdpr_link_url'] ?? '');
+        
         return $sanitized;
     }
     
@@ -438,6 +444,63 @@ class WPAIA_Admin {
                                                value="<?php echo esc_attr($options['lead_capture_description'] ?? ''); ?>" 
                                                class="regular-text"
                                                placeholder="<?php esc_attr_e('Leave your contact info and we\'ll get back to you.', 'wp-ai-assistant'); ?>">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- GDPR Compliance -->
+                        <div class="wpaia-card">
+                            <h2><?php _e('GDPR Compliance', 'wp-ai-assistant'); ?></h2>
+                            <p class="description"><?php _e('Settings for GDPR/privacy compliance when collecting user data.', 'wp-ai-assistant'); ?></p>
+                            
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row">
+                                        <label for="wpaia_gdpr_consent_enabled"><?php _e('Require Consent', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <label class="wpaia-switch">
+                                            <input type="checkbox" name="wpaia_settings[gdpr_consent_enabled]" value="1" 
+                                                   id="wpaia_gdpr_consent_enabled"
+                                                   <?php checked(!empty($options['gdpr_consent_enabled'])); ?>>
+                                            <span class="wpaia-slider"></span>
+                                        </label>
+                                        <p class="description"><?php _e('Require users to accept privacy consent before submitting their contact information.', 'wp-ai-assistant'); ?></p>
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-gdpr-option" style="<?php echo empty($options['gdpr_consent_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_gdpr_consent_text"><?php _e('Consent Text', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="wpaia_settings[gdpr_consent_text]" id="wpaia_gdpr_consent_text" 
+                                               value="<?php echo esc_attr($options['gdpr_consent_text'] ?? ''); ?>" 
+                                               class="regular-text"
+                                               placeholder="<?php esc_attr_e('I agree to the storage of my data for support purposes.', 'wp-ai-assistant'); ?>">
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-gdpr-option" style="<?php echo empty($options['gdpr_consent_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_gdpr_link_text"><?php _e('Privacy Link Text', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="wpaia_settings[gdpr_link_text]" id="wpaia_gdpr_link_text" 
+                                               value="<?php echo esc_attr($options['gdpr_link_text'] ?? ''); ?>" 
+                                               class="regular-text"
+                                               placeholder="<?php esc_attr_e('Privacy Policy', 'wp-ai-assistant'); ?>">
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-gdpr-option" style="<?php echo empty($options['gdpr_consent_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_gdpr_link_url"><?php _e('Privacy Link URL', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="url" name="wpaia_settings[gdpr_link_url]" id="wpaia_gdpr_link_url" 
+                                               value="<?php echo esc_url($options['gdpr_link_url'] ?? ''); ?>" 
+                                               class="regular-text"
+                                               placeholder="<?php echo esc_url(get_privacy_policy_url() ?: site_url('/privacy-policy/')); ?>">
+                                        <p class="description"><?php _e('Leave empty to use your site\'s default Privacy Policy page.', 'wp-ai-assistant'); ?></p>
                                     </td>
                                 </tr>
                             </table>

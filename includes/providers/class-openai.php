@@ -72,6 +72,7 @@ class WPAIA_Provider_OpenAI implements WPAIA_Provider_Interface {
         ));
         
         if (is_wp_error($response)) {
+            WPAIA_Logger::api_error('OpenAI', $response->get_error_message(), array('model' => $model));
             return $response;
         }
         
@@ -80,12 +81,24 @@ class WPAIA_Provider_OpenAI implements WPAIA_Provider_Interface {
         
         if ($status_code !== 200) {
             $error_message = $body['error']['message'] ?? __('Unknown error', 'wp-ai-assistant');
+            WPAIA_Logger::api_error('OpenAI', $error_message, array(
+                'status_code' => $status_code,
+                'model' => $model,
+                'response' => $body,
+            ));
             return new WP_Error('api_error', $error_message, array('status' => $status_code));
         }
         
         if (!isset($body['choices'][0]['message']['content'])) {
+            WPAIA_Logger::api_error('OpenAI', 'Invalid response structure', array('response' => $body));
             return new WP_Error('invalid_response', __('Invalid response from API', 'wp-ai-assistant'));
         }
+        
+        // Log successful request for debugging
+        WPAIA_Logger::debug('OpenAI API request successful', array(
+            'model' => $body['model'] ?? $model,
+            'tokens' => $body['usage'] ?? array(),
+        ));
         
         return array(
             'content' => $body['choices'][0]['message']['content'],

@@ -530,6 +530,53 @@
     background: var(--wpaia-primary-dark) !important;
 }
 
+/* GDPR Consent Checkbox */
+#wpaia-chat-widget .wpaia-gdpr-consent {
+    margin: 8px 0 4px 0 !important;
+    padding: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-consent label {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    font-size: 12px !important;
+    color: var(--wpaia-gray-600) !important;
+    line-height: 1.4 !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-consent input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+    cursor: pointer !important;
+    accent-color: var(--wpaia-primary) !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-text {
+    flex: 1 !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-text a {
+    color: var(--wpaia-primary) !important;
+    text-decoration: underline !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-text a:hover {
+    color: var(--wpaia-primary-dark) !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-consent.wpaia-gdpr-error label {
+    color: #ef4444 !important;
+}
+
+#wpaia-chat-widget .wpaia-gdpr-consent.wpaia-gdpr-error input[type="checkbox"] {
+    outline: 2px solid #ef4444 !important;
+    outline-offset: 1px !important;
+}
+
 /* Input Area */
 #wpaia-chat-widget .wpaia-input-area {
     padding: 16px 20px !important;
