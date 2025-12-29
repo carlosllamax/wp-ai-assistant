@@ -1,0 +1,658 @@
+/**
+ * WP AI Assistant - Chat Widget Styles
+ * 
+ * All selectors use #wpaia-chat-widget prefix for maximum specificity
+ * to prevent theme style overrides.
+ */
+
+/* CSS Variables - Scoped to widget */
+#wpaia-chat-widget {
+    --wpaia-primary: #0073aa;
+    --wpaia-primary-dark: #005a87;
+    --wpaia-white: #ffffff;
+    --wpaia-gray-100: #f7f7f7;
+    --wpaia-gray-200: #e5e5e5;
+    --wpaia-gray-300: #d4d4d4;
+    --wpaia-gray-400: #a1a1aa;
+    --wpaia-gray-500: #737373;
+    --wpaia-gray-700: #404040;
+    --wpaia-gray-900: #171717;
+    --wpaia-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    --wpaia-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --wpaia-radius: 16px;
+    --wpaia-radius-sm: 8px;
+    --wpaia-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Widget Container */
+#wpaia-chat-widget.wpaia-widget {
+    position: fixed !important;
+    z-index: 999999 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    box-sizing: border-box !important;
+}
+
+#wpaia-chat-widget.wpaia-widget *,
+#wpaia-chat-widget.wpaia-widget *::before,
+#wpaia-chat-widget.wpaia-widget *::after {
+    box-sizing: border-box !important;
+}
+
+#wpaia-chat-widget.wpaia-position-bottom-right {
+    bottom: 20px !important;
+    right: 20px !important;
+    left: auto !important;
+    top: auto !important;
+}
+
+#wpaia-chat-widget.wpaia-position-bottom-left {
+    bottom: 20px !important;
+    left: 20px !important;
+    right: auto !important;
+    top: auto !important;
+}
+
+/* Toggle Button */
+#wpaia-chat-widget .wpaia-toggle-btn {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: var(--wpaia-primary) !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: var(--wpaia-shadow) !important;
+    transition: var(--wpaia-transition) !important;
+    color: var(--wpaia-white) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+#wpaia-chat-widget .wpaia-toggle-btn:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.2) !important;
+}
+
+#wpaia-chat-widget .wpaia-toggle-btn:focus {
+    outline: 2px solid var(--wpaia-primary) !important;
+    outline-offset: 2px !important;
+}
+
+#wpaia-chat-widget .wpaia-toggle-btn svg {
+    width: 28px !important;
+    height: 28px !important;
+    transition: var(--wpaia-transition) !important;
+    flex-shrink: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-toggle-btn .wpaia-icon-custom {
+    width: 36px !important;
+    height: 36px !important;
+    object-fit: contain !important;
+    border-radius: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-toggle-btn .wpaia-icon-close {
+    display: none !important;
+}
+
+#wpaia-chat-widget.wpaia-open .wpaia-toggle-btn .wpaia-icon-chat {
+    display: none !important;
+}
+
+#wpaia-chat-widget.wpaia-open .wpaia-toggle-btn .wpaia-icon-close {
+    display: block !important;
+}
+
+/* Chat Window */
+#wpaia-chat-widget .wpaia-chat-window {
+    position: absolute !important;
+    bottom: 80px !important;
+    width: 380px !important;
+    max-width: calc(100vw - 40px) !important;
+    height: 520px !important;
+    max-height: calc(100vh - 120px) !important;
+    background: var(--wpaia-white) !important;
+    border-radius: var(--wpaia-radius) !important;
+    box-shadow: var(--wpaia-shadow) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(20px) scale(0.95) !important;
+    transition: var(--wpaia-transition) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#wpaia-chat-widget.wpaia-position-bottom-right .wpaia-chat-window {
+    right: 0 !important;
+    left: auto !important;
+}
+
+#wpaia-chat-widget.wpaia-position-bottom-left .wpaia-chat-window {
+    left: 0 !important;
+    right: auto !important;
+}
+
+#wpaia-chat-widget.wpaia-open .wpaia-chat-window {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+/* Header */
+#wpaia-chat-widget .wpaia-header {
+    background: var(--wpaia-primary) !important;
+    color: var(--wpaia-white) !important;
+    padding: 16px 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-header-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+#wpaia-chat-widget .wpaia-avatar {
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    overflow: hidden !important;
+}
+
+#wpaia-chat-widget .wpaia-avatar svg {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+#wpaia-chat-widget .wpaia-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+
+#wpaia-chat-widget .wpaia-header-text {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#wpaia-chat-widget .wpaia-title {
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    color: var(--wpaia-white) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+}
+
+#wpaia-chat-widget .wpaia-subtitle {
+    font-size: 12px !important;
+    opacity: 0.85 !important;
+    color: var(--wpaia-white) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+}
+
+#wpaia-chat-widget .wpaia-minimize-btn {
+    background: none !important;
+    border: none !important;
+    color: var(--wpaia-white) !important;
+    cursor: pointer !important;
+    padding: 8px !important;
+    opacity: 0.8 !important;
+    transition: var(--wpaia-transition) !important;
+    margin: 0 !important;
+    outline: none !important;
+}
+
+#wpaia-chat-widget .wpaia-minimize-btn:hover {
+    opacity: 1 !important;
+}
+
+#wpaia-chat-widget .wpaia-minimize-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Messages Area */
+#wpaia-chat-widget .wpaia-messages {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    background: var(--wpaia-gray-100) !important;
+    margin: 0 !important;
+}
+
+/* Message Bubbles */
+#wpaia-chat-widget .wpaia-message {
+    max-width: 85% !important;
+    padding: 12px 16px !important;
+    border-radius: var(--wpaia-radius) !important;
+    animation: wpaia-fadeIn 0.3s ease !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+@keyframes wpaia-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#wpaia-chat-widget .wpaia-message-user {
+    background: var(--wpaia-primary) !important;
+    color: var(--wpaia-white) !important;
+    align-self: flex-end !important;
+    border-bottom-right-radius: 4px !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant {
+    background: var(--wpaia-white) !important;
+    color: var(--wpaia-gray-900) !important;
+    align-self: flex-start !important;
+    border-bottom-left-radius: 4px !important;
+    box-shadow: var(--wpaia-shadow-sm) !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant p {
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant p:last-child {
+    margin-bottom: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant ul,
+#wpaia-chat-widget .wpaia-message-assistant ol {
+    margin: 8px 0 !important;
+    padding-left: 20px !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant li {
+    margin: 4px 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant code {
+    background: var(--wpaia-gray-200) !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    font-size: 13px !important;
+    font-family: monospace !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant a {
+    color: var(--wpaia-primary) !important;
+    text-decoration: underline !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant a:hover {
+    color: var(--wpaia-primary-dark) !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant strong,
+#wpaia-chat-widget .wpaia-message-assistant b {
+    font-weight: 700 !important;
+}
+
+#wpaia-chat-widget .wpaia-message-assistant em,
+#wpaia-chat-widget .wpaia-message-assistant i {
+    font-style: italic !important;
+}
+
+/* Typing Indicator */
+#wpaia-chat-widget .wpaia-typing {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 12px 16px !important;
+    background: var(--wpaia-white) !important;
+    border-radius: var(--wpaia-radius) !important;
+    align-self: flex-start !important;
+    box-shadow: var(--wpaia-shadow-sm) !important;
+}
+
+#wpaia-chat-widget .wpaia-typing-dot {
+    width: 8px !important;
+    height: 8px !important;
+    background: var(--wpaia-gray-400) !important;
+    border-radius: 50% !important;
+    animation: wpaia-typing 1.4s infinite ease-in-out !important;
+}
+
+#wpaia-chat-widget .wpaia-typing-dot:nth-child(1) {
+    animation-delay: 0s !important;
+}
+
+#wpaia-chat-widget .wpaia-typing-dot:nth-child(2) {
+    animation-delay: 0.2s !important;
+}
+
+#wpaia-chat-widget .wpaia-typing-dot:nth-child(3) {
+    animation-delay: 0.4s !important;
+}
+
+@keyframes wpaia-typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        background: var(--wpaia-gray-300);
+    }
+    30% {
+        transform: translateY(-8px);
+        background: var(--wpaia-primary);
+    }
+}
+
+/* Order Form */
+#wpaia-chat-widget .wpaia-order-form {
+    padding: 16px 20px !important;
+    background: var(--wpaia-white) !important;
+    border-top: 1px solid var(--wpaia-gray-200) !important;
+    margin: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-order-form-inner h4 {
+    margin: 0 0 12px 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    color: var(--wpaia-gray-700) !important;
+    font-weight: 600 !important;
+}
+
+#wpaia-chat-widget .wpaia-order-input {
+    width: 100% !important;
+    padding: 10px 12px !important;
+    border: 1px solid var(--wpaia-gray-300) !important;
+    border-radius: var(--wpaia-radius-sm) !important;
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+    transition: var(--wpaia-transition) !important;
+    background: var(--wpaia-white) !important;
+    color: var(--wpaia-gray-900) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#wpaia-chat-widget .wpaia-order-input:focus {
+    outline: none !important;
+    border-color: var(--wpaia-primary) !important;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1) !important;
+}
+
+#wpaia-chat-widget .wpaia-order-buttons {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+}
+
+#wpaia-chat-widget .wpaia-btn {
+    flex: 1 !important;
+    padding: 10px 16px !important;
+    border-radius: var(--wpaia-radius-sm) !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: var(--wpaia-transition) !important;
+    border: none !important;
+    outline: none !important;
+    text-align: center !important;
+    text-decoration: none !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-cancel {
+    background: var(--wpaia-gray-200) !important;
+    color: var(--wpaia-gray-700) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-cancel:hover {
+    background: var(--wpaia-gray-300) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-verify {
+    background: var(--wpaia-primary) !important;
+    color: var(--wpaia-white) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-verify:hover {
+    background: var(--wpaia-primary-dark) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn:disabled {
+    opacity: 0.6 !important;
+    cursor: not-allowed !important;
+}
+
+/* Input Area */
+#wpaia-chat-widget .wpaia-input-area {
+    padding: 16px 20px !important;
+    background: var(--wpaia-white) !important;
+    border-top: 1px solid var(--wpaia-gray-200) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-input {
+    flex: 1 !important;
+    padding: 12px 16px !important;
+    border: 1px solid var(--wpaia-gray-300) !important;
+    border-radius: 24px !important;
+    font-size: 14px !important;
+    transition: var(--wpaia-transition) !important;
+    background: var(--wpaia-white) !important;
+    color: var(--wpaia-gray-900) !important;
+    outline: none !important;
+    box-shadow: none !important;
+    min-width: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-input:focus {
+    outline: none !important;
+    border-color: var(--wpaia-primary) !important;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1) !important;
+}
+
+#wpaia-chat-widget .wpaia-input::placeholder {
+    color: var(--wpaia-gray-500) !important;
+}
+
+#wpaia-chat-widget .wpaia-order-btn,
+#wpaia-chat-widget .wpaia-send-btn {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: var(--wpaia-transition) !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+}
+
+#wpaia-chat-widget .wpaia-order-btn {
+    background: var(--wpaia-gray-200) !important;
+    color: var(--wpaia-gray-700) !important;
+}
+
+#wpaia-chat-widget .wpaia-order-btn:hover {
+    background: var(--wpaia-gray-300) !important;
+}
+
+#wpaia-chat-widget .wpaia-order-btn.wpaia-verified {
+    background: #10b981 !important;
+    color: white !important;
+}
+
+#wpaia-chat-widget .wpaia-send-btn {
+    background: var(--wpaia-primary) !important;
+    color: var(--wpaia-white) !important;
+}
+
+#wpaia-chat-widget .wpaia-send-btn:hover {
+    background: var(--wpaia-primary-dark) !important;
+}
+
+#wpaia-chat-widget .wpaia-send-btn:disabled {
+    background: var(--wpaia-gray-300) !important;
+    cursor: not-allowed !important;
+}
+
+#wpaia-chat-widget .wpaia-order-btn svg,
+#wpaia-chat-widget .wpaia-send-btn svg {
+    width: 20px !important;
+    height: 20px !important;
+}
+
+/* Powered By */
+#wpaia-chat-widget .wpaia-powered {
+    padding: 8px !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    color: var(--wpaia-gray-500) !important;
+    background: var(--wpaia-white) !important;
+    margin: 0 !important;
+    border: none !important;
+}
+
+#wpaia-chat-widget .wpaia-powered span {
+    font-size: 11px !important;
+    color: var(--wpaia-gray-500) !important;
+}
+
+#wpaia-chat-widget .wpaia-powered a {
+    color: var(--wpaia-gray-500) !important;
+    text-decoration: none !important;
+    transition: var(--wpaia-transition) !important;
+}
+
+#wpaia-chat-widget .wpaia-powered a:hover {
+    color: var(--wpaia-primary) !important;
+    text-decoration: underline !important;
+}
+
+/* Mobile Styles */
+@media (max-width: 480px) {
+    #wpaia-chat-widget.wpaia-widget {
+        bottom: 10px !important;
+        right: 10px !important;
+        left: auto !important;
+    }
+    
+    #wpaia-chat-widget.wpaia-position-bottom-right,
+    #wpaia-chat-widget.wpaia-position-bottom-left {
+        right: 10px !important;
+        left: auto !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-chat-window {
+        width: calc(100vw - 20px) !important;
+        max-width: none !important;
+        height: calc(100vh - 100px) !important;
+        max-height: none !important;
+        bottom: 70px !important;
+        right: -10px !important;
+        border-radius: var(--wpaia-radius-sm) !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-toggle-btn {
+        width: 56px !important;
+        height: 56px !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    #wpaia-chat-widget.wpaia-widget {
+        --wpaia-white: #1f2937;
+        --wpaia-gray-100: #111827;
+        --wpaia-gray-200: #374151;
+        --wpaia-gray-300: #4b5563;
+        --wpaia-gray-500: #9ca3af;
+        --wpaia-gray-700: #d1d5db;
+        --wpaia-gray-900: #f9fafb;
+    }
+    
+    #wpaia-chat-widget .wpaia-message-assistant {
+        background: #374151 !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-input,
+    #wpaia-chat-widget .wpaia-order-input {
+        background: #374151 !important;
+        border-color: #4b5563 !important;
+        color: #f9fafb !important;
+    }
+}
+
+/* Scrollbar */
+#wpaia-chat-widget .wpaia-messages::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+#wpaia-chat-widget .wpaia-messages::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+#wpaia-chat-widget .wpaia-messages::-webkit-scrollbar-thumb {
+    background: var(--wpaia-gray-300) !important;
+    border-radius: 3px !important;
+}
+
+#wpaia-chat-widget .wpaia-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--wpaia-gray-400) !important;
+}
+
+/* Error Message */
+#wpaia-chat-widget .wpaia-message-error {
+    background: #fef2f2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fecaca !important;
+}
+
+/* Welcome Message */
+#wpaia-chat-widget .wpaia-welcome-message {
+    text-align: center !important;
+    padding: 20px !important;
+    color: var(--wpaia-gray-500) !important;
+    font-size: 13px !important;
+}

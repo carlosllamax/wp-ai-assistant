@@ -1,0 +1,43 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Node (if ever needed for build)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Composer
+vendor/
+composer.lock
+
+# Build artifacts
+*.zip
+dist/
+build/
+
+# Logs
+*.log
+debug.log
+
+# Local config
+.env
+.env.local
+wp-config.php
+
+# Backup files
+*.bak
+*.swp
+*~
+
+# Testing
+tests/
+phpunit.xml
+.phpunit.result.cache
