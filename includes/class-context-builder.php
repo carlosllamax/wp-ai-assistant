@@ -92,15 +92,16 @@ class WPAIA_Context_Builder {
         }
         
         $context = "## Website Pages\n";
+        $context .= "When referring to these pages, include the link in markdown format: [Page Title](URL)\n\n";
         
         foreach ($pages as $page) {
             $title = $page->post_title;
             $url = get_permalink($page->ID);
             $excerpt = wp_trim_words(strip_tags($page->post_content), 100);
             
-            $context .= "\n### {$title}\n";
-            $context .= "URL: {$url}\n";
-            $context .= "Content: {$excerpt}\n";
+            $context .= "### {$title}\n";
+            $context .= "- **Link**: [{$title}]({$url})\n";
+            $context .= "- Content: {$excerpt}\n\n";
         }
         
         return $context;
@@ -124,7 +125,8 @@ class WPAIA_Context_Builder {
             return '';
         }
         
-        $context = "## Products/Services\n";
+        $context = "## Products Catalog\n";
+        $context .= "Below are the available products. When recommending products, ALWAYS include the link in markdown format: [Product Name](URL)\n\n";
         
         foreach ($products as $product) {
             $name = $product->get_name();
@@ -132,13 +134,16 @@ class WPAIA_Context_Builder {
             $currency = get_woocommerce_currency_symbol();
             $description = wp_trim_words($product->get_short_description() ?: $product->get_description(), 50);
             $url = $product->get_permalink();
+            $stock = $product->is_in_stock() ? 'In stock' : 'Out of stock';
             
-            $context .= "\n### {$name}\n";
+            $context .= "### {$name}\n";
+            $context .= "- **Link**: [{$name}]({$url})\n";
             $context .= "- Price: {$currency}{$price}\n";
-            $context .= "- URL: {$url}\n";
+            $context .= "- Stock: {$stock}\n";
             if (!empty($description)) {
                 $context .= "- Description: {$description}\n";
             }
+            $context .= "\n";
         }
         
         return $context;
@@ -242,13 +247,16 @@ class WPAIA_Context_Builder {
         $prompt .= "Answer questions based on the provided context. ";
         $prompt .= "If you don't know something, say so politely and suggest contacting support. ";
         $prompt .= "When users ask about their order, ask them to provide their order number and email for verification. ";
-        $prompt .= "Keep responses brief and to the point. Use bullet points when listing multiple items. ";
+        $prompt .= "Keep responses brief and to the point. Use bullet points when listing multiple items.";
         
-        // Important: Include links instruction
-        $prompt .= "\n\nIMPORTANT - LINKS: When mentioning pages, services, or products, ALWAYS include the relevant link using markdown format [text](url). ";
-        $prompt .= "The context includes URLs for each page and product - use them! ";
-        $prompt .= "Example: 'You can check our [luggage storage service]({$site_url}/services/storage/)' or 'Visit our [contact page]({$site_url}/contact/)'. ";
-        $prompt .= "This helps users navigate directly to the information they need.";
+        // CRITICAL: Links instruction
+        $prompt .= "\n\n### MANDATORY - ALWAYS INCLUDE LINKS ###\n";
+        $prompt .= "When mentioning ANY product, page, or service from the context, you MUST include its URL as a clickable link.\n";
+        $prompt .= "Format: [Product/Page Name](URL)\n";
+        $prompt .= "Example: 'Te recomiendo el [Aceite de Coco Orgánico](https://tienda.com/producto/aceite-coco/)'\n";
+        $prompt .= "Example: 'Puedes ver nuestra [política de envíos](https://tienda.com/envios/)'\n";
+        $prompt .= "The context below includes the URL for each product and page - USE THEM in your responses!\n";
+        $prompt .= "Users should be able to click directly to the products you recommend.";
         
         // Add language instruction if WPML
         if (defined('ICL_LANGUAGE_CODE')) {

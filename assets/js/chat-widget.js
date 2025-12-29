@@ -259,8 +259,34 @@
      * Format message content (sanitized)
      */
     function formatMessage(content) {
-        // First, escape HTML to prevent XSS
+        // Process markdown BEFORE escaping HTML
+        // This way we can safely convert markdown to HTML elements
+        
+        // First, extract and protect links [text](url)
+        const links = [];
+        content = content.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, function(match, text, url) {
+            const placeholder = `__LINK_${links.length}__`;
+            links.push({ text: escapeHtml(text), url: url });
+            return placeholder;
+        });
+        
+        // Also handle relative URLs
+        content = content.replace(/\[([^\]]+)\]\((\/[^)]+)\)/g, function(match, text, url) {
+            const placeholder = `__LINK_${links.length}__`;
+            links.push({ text: escapeHtml(text), url: url });
+            return placeholder;
+        });
+        
+        // Now escape HTML to prevent XSS
         content = escapeHtml(content);
+        
+        // Restore links with safe HTML
+        links.forEach((link, index) => {
+            content = content.replace(
+                `__LINK_${index}__`,
+                `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.text}</a>`
+            );
+        });
         
         // Convert line breaks
         content = content.replace(/\n/g, '<br>');
@@ -273,15 +299,6 @@
         
         // Code `code`
         content = content.replace(/`(.*?)`/g, '<code>$1</code>');
-        
-        // Links [text](url) - validate URL before creating link
-        content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, text, url) {
-            // Only allow http, https, and relative URLs
-            if (url.match(/^(https?:\/\/|\/)/i)) {
-                return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
-            }
-            return text;
-        });
         
         // Lists - item
         content = content.replace(/^- (.+)$/gm, '<li>$1</li>');
