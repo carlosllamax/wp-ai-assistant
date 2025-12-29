@@ -3,7 +3,7 @@
  * Plugin Name: WP AI Assistant
  * Plugin URI: https://github.com/carlosllamax/wp-ai-assistant
  * Description: AI-powered chat assistant for WordPress. Supports Groq, OpenAI, Anthropic. BYOK (Bring Your Own Key).
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Carlos Llamas
  * Author URI: https://carlosllamax.com
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('WPAIA_VERSION', '1.1.0');
+define('WPAIA_VERSION', '1.1.1');
 define('WPAIA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WPAIA_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPAIA_PLUGIN_BASENAME', plugin_basename(__FILE__));

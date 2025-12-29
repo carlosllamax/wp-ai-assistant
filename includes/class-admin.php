@@ -108,6 +108,18 @@ class WPAIA_Admin {
      * Enqueue admin assets
      */
     public function enqueue_admin_assets($hook) {
+        // Load minimal script on plugins page for "Check for updates" link
+        if ($hook === 'plugins.php') {
+            wp_enqueue_script(
+                'wpaia-plugins-page',
+                WPAIA_PLUGIN_URL . 'assets/js/plugins-page.js',
+                array('jquery'),
+                WPAIA_VERSION,
+                true
+            );
+            return;
+        }
+
         if ($hook !== 'toplevel_page_wp-ai-assistant') {
             return;
         }
