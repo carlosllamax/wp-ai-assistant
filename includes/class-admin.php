@@ -101,6 +101,25 @@ class WPAIA_Admin {
         $sanitized['custom_context'] = wp_kses_post($input['custom_context'] ?? '');
         $sanitized['hide_branding'] = !empty($input['hide_branding']);
         
+        // Lead capture settings
+        $sanitized['save_conversations'] = !empty($input['save_conversations']);
+        $sanitized['lead_capture_enabled'] = !empty($input['lead_capture_enabled']);
+        $sanitized['lead_capture_mode'] = in_array($input['lead_capture_mode'] ?? 'after', array('before', 'after', 'end')) 
+            ? $input['lead_capture_mode'] 
+            : 'after';
+        $sanitized['lead_capture_after_messages'] = absint($input['lead_capture_after_messages'] ?? 3);
+        $sanitized['lead_capture_fields'] = array();
+        if (!empty($input['lead_capture_fields']) && is_array($input['lead_capture_fields'])) {
+            $valid_fields = array('email', 'phone', 'name');
+            foreach ($input['lead_capture_fields'] as $field) {
+                if (in_array($field, $valid_fields)) {
+                    $sanitized['lead_capture_fields'][] = $field;
+                }
+            }
+        }
+        $sanitized['lead_capture_title'] = sanitize_text_field($input['lead_capture_title'] ?? '');
+        $sanitized['lead_capture_description'] = sanitize_text_field($input['lead_capture_description'] ?? '');
+        
         return $sanitized;
     }
     
@@ -319,6 +338,106 @@ class WPAIA_Admin {
                                                   rows="6" class="large-text" 
                                                   placeholder="<?php esc_attr_e('You are a helpful assistant for {site_name}. Be friendly, concise, and helpful.', 'wp-ai-assistant'); ?>"><?php echo esc_textarea($options['system_prompt'] ?? ''); ?></textarea>
                                         <p class="description"><?php _e('Customize how the AI behaves. Use {site_name} as placeholder. Leave empty for default.', 'wp-ai-assistant'); ?></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <!-- Lead Capture & Conversations -->
+                        <div class="wpaia-card">
+                            <h2><?php _e('Lead Capture & Conversations', 'wp-ai-assistant'); ?></h2>
+                            <p class="description"><?php _e('Save conversations and capture visitor contact information.', 'wp-ai-assistant'); ?></p>
+                            
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><?php _e('Save Conversations', 'wp-ai-assistant'); ?></th>
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" name="wpaia_settings[save_conversations]" value="1" 
+                                                   <?php checked(!empty($options['save_conversations'])); ?>>
+                                            <?php _e('Save all conversations to database', 'wp-ai-assistant'); ?>
+                                        </label>
+                                        <p class="description"><?php _e('Store conversation history for review in the admin panel.', 'wp-ai-assistant'); ?></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><?php _e('Lead Capture', 'wp-ai-assistant'); ?></th>
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" name="wpaia_settings[lead_capture_enabled]" value="1" 
+                                                   id="wpaia_lead_capture_enabled"
+                                                   <?php checked(!empty($options['lead_capture_enabled'])); ?>>
+                                            <?php _e('Request visitor contact information', 'wp-ai-assistant'); ?>
+                                        </label>
+                                        <p class="description"><?php _e('Ask visitors for their contact details during chat.', 'wp-ai-assistant'); ?></p>
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-lead-capture-option" style="<?php echo empty($options['lead_capture_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_lead_capture_mode"><?php _e('When to Ask', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <select name="wpaia_settings[lead_capture_mode]" id="wpaia_lead_capture_mode">
+                                            <option value="before" <?php selected($options['lead_capture_mode'] ?? 'after', 'before'); ?>><?php _e('Before chat starts', 'wp-ai-assistant'); ?></option>
+                                            <option value="after" <?php selected($options['lead_capture_mode'] ?? 'after', 'after'); ?>><?php _e('After X messages', 'wp-ai-assistant'); ?></option>
+                                            <option value="end" <?php selected($options['lead_capture_mode'] ?? 'after', 'end'); ?>><?php _e('When closing chat', 'wp-ai-assistant'); ?></option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-lead-capture-option wpaia-after-messages-option" style="<?php echo (empty($options['lead_capture_enabled']) || ($options['lead_capture_mode'] ?? 'after') !== 'after') ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_lead_capture_after_messages"><?php _e('After Messages', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="number" name="wpaia_settings[lead_capture_after_messages]" id="wpaia_lead_capture_after_messages" 
+                                               value="<?php echo esc_attr($options['lead_capture_after_messages'] ?? 3); ?>" 
+                                               min="1" max="20" class="small-text">
+                                        <span class="description"><?php _e('messages exchanged', 'wp-ai-assistant'); ?></span>
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-lead-capture-option" style="<?php echo empty($options['lead_capture_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row"><?php _e('Fields to Capture', 'wp-ai-assistant'); ?></th>
+                                    <td>
+                                        <fieldset>
+                                            <?php $capture_fields = $options['lead_capture_fields'] ?? array('email'); ?>
+                                            <label>
+                                                <input type="checkbox" name="wpaia_settings[lead_capture_fields][]" value="email" 
+                                                       <?php checked(in_array('email', $capture_fields)); ?>>
+                                                <?php _e('Email address', 'wp-ai-assistant'); ?>
+                                            </label><br>
+                                            <label>
+                                                <input type="checkbox" name="wpaia_settings[lead_capture_fields][]" value="phone" 
+                                                       <?php checked(in_array('phone', $capture_fields)); ?>>
+                                                <?php _e('Phone number', 'wp-ai-assistant'); ?>
+                                            </label><br>
+                                            <label>
+                                                <input type="checkbox" name="wpaia_settings[lead_capture_fields][]" value="name" 
+                                                       <?php checked(in_array('name', $capture_fields)); ?>>
+                                                <?php _e('Name', 'wp-ai-assistant'); ?>
+                                            </label>
+                                        </fieldset>
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-lead-capture-option" style="<?php echo empty($options['lead_capture_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_lead_capture_title"><?php _e('Form Title', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="wpaia_settings[lead_capture_title]" id="wpaia_lead_capture_title" 
+                                               value="<?php echo esc_attr($options['lead_capture_title'] ?? ''); ?>" 
+                                               class="regular-text"
+                                               placeholder="<?php esc_attr_e('Stay in touch!', 'wp-ai-assistant'); ?>">
+                                    </td>
+                                </tr>
+                                <tr class="wpaia-lead-capture-option" style="<?php echo empty($options['lead_capture_enabled']) ? 'display:none;' : ''; ?>">
+                                    <th scope="row">
+                                        <label for="wpaia_lead_capture_description"><?php _e('Form Description', 'wp-ai-assistant'); ?></label>
+                                    </th>
+                                    <td>
+                                        <input type="text" name="wpaia_settings[lead_capture_description]" id="wpaia_lead_capture_description" 
+                                               value="<?php echo esc_attr($options['lead_capture_description'] ?? ''); ?>" 
+                                               class="regular-text"
+                                               placeholder="<?php esc_attr_e('Leave your contact info and we\'ll get back to you.', 'wp-ai-assistant'); ?>">
                                     </td>
                                 </tr>
                             </table>

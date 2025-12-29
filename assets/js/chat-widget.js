@@ -14,11 +14,14 @@
         isLoading: false,
         conversationId: config.conversationId || generateUUID(),
         isVerified: false,
-        messages: []
+        messages: [],
+        messageCount: 0,
+        leadCaptured: false,
+        leadFormShown: false
     };
 
     // DOM Elements
-    let widget, chatWindow, messagesContainer, input, sendBtn, toggleBtn, orderBtn, orderForm;
+    let widget, chatWindow, messagesContainer, input, sendBtn, toggleBtn, orderBtn, orderForm, leadForm;
 
     /**
      * Initialize widget
@@ -34,9 +37,13 @@
         toggleBtn = widget.querySelector('.wpaia-toggle-btn');
         orderBtn = widget.querySelector('.wpaia-order-btn');
         orderForm = widget.querySelector('.wpaia-order-form');
+        leadForm = widget.querySelector('.wpaia-lead-form');
 
         // Set conversation ID cookie
         setCookie('wpaia_conv_id', state.conversationId, 1);
+        
+        // Check if lead was already captured
+        state.leadCaptured = localStorage.getItem('wpaia_lead_captured_' + state.conversationId) === 'true';
 
         // Bind events
         bindEvents();
@@ -44,6 +51,11 @@
         // Show welcome message
         if (config.welcomeMessage) {
             addMessage('assistant', config.welcomeMessage);
+        }
+        
+        // Check if we should show lead form before chat (mode: before)
+        if (shouldShowLeadForm('before')) {
+            showLeadForm();
         }
     }
 
@@ -53,7 +65,14 @@
     function bindEvents() {
         // Toggle chat
         toggleBtn.addEventListener('click', toggleChat);
-        widget.querySelector('.wpaia-minimize-btn').addEventListener('click', toggleChat);
+        widget.querySelector('.wpaia-minimize-btn').addEventListener('click', function() {
+            // Check if should show lead form on close (mode: end)
+            if (shouldShowLeadForm('end')) {
+                showLeadForm();
+            } else {
+                toggleChat();
+            }
+        });
 
         // Send message
         sendBtn.addEventListener('click', sendMessage);
@@ -72,6 +91,23 @@
         if (orderForm) {
             orderForm.querySelector('.wpaia-btn-cancel').addEventListener('click', toggleOrderForm);
             orderForm.querySelector('.wpaia-btn-verify').addEventListener('click', verifyOrder);
+        }
+        
+        // Lead capture form
+        if (leadForm) {
+            const skipBtn = leadForm.querySelector('.wpaia-btn-skip');
+            const submitBtn = leadForm.querySelector('.wpaia-btn-submit-lead');
+            
+            if (skipBtn) {
+                skipBtn.addEventListener('click', function() {
+                    hideLeadForm();
+                    state.leadFormShown = true;
+                });
+            }
+            
+            if (submitBtn) {
+                submitBtn.addEventListener('click', submitLead);
+            }
         }
     }
 
@@ -93,10 +129,21 @@
     async function sendMessage() {
         const message = input.value.trim();
         if (!message || state.isLoading) return;
+        
+        // Check if lead form is blocking (mode: before)
+        if (config.leadCapture && config.leadCapture.enabled && 
+            config.leadCapture.mode === 'before' && 
+            !state.leadCaptured && !state.leadFormShown) {
+            showLeadForm();
+            return;
+        }
 
         // Add user message
         addMessage('user', message);
         input.value = '';
+        
+        // Increment message count
+        state.messageCount++;
         
         // Show typing indicator
         state.isLoading = true;
@@ -122,8 +169,14 @@
 
             if (data.success !== false && data.message) {
                 addMessage('assistant', data.message);
+                state.messageCount++;
             } else {
                 addMessage('assistant', data.message || config.strings.error);
+            }
+            
+            // Check if should show lead form after X messages (mode: after)
+            if (shouldShowLeadForm('after')) {
+                setTimeout(showLeadForm, 500);
             }
         } catch (error) {
             hideTyping();
@@ -292,6 +345,113 @@
     function setCookie(name, value, hours) {
         const expires = new Date(Date.now() + hours * 60 * 60 * 1000).toUTCString();
         document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`;
+    }
+    
+    /**
+     * Check if lead form should be shown
+     */
+    function shouldShowLeadForm(mode) {
+        const lc = config.leadCapture;
+        
+        if (!lc || !lc.enabled || state.leadCaptured || state.leadFormShown) {
+            return false;
+        }
+        
+        if (lc.mode !== mode) {
+            return false;
+        }
+        
+        if (mode === 'after') {
+            return state.messageCount >= (lc.afterMessages * 2); // User + assistant messages
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Show lead capture form
+     */
+    function showLeadForm() {
+        if (!leadForm || state.leadCaptured) return;
+        
+        leadForm.style.display = 'block';
+        
+        // Focus first input
+        const firstInput = leadForm.querySelector('input');
+        if (firstInput) {
+            setTimeout(() => firstInput.focus(), 100);
+        }
+    }
+    
+    /**
+     * Hide lead capture form
+     */
+    function hideLeadForm() {
+        if (!leadForm) return;
+        leadForm.style.display = 'none';
+    }
+    
+    /**
+     * Submit lead information
+     */
+    async function submitLead() {
+        const submitBtn = leadForm.querySelector('.wpaia-btn-submit-lead');
+        const emailInput = leadForm.querySelector('#wpaia-lead-email');
+        const phoneInput = leadForm.querySelector('#wpaia-lead-phone');
+        const nameInput = leadForm.querySelector('#wpaia-lead-name');
+        
+        const email = emailInput ? emailInput.value.trim() : '';
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+        const name = nameInput ? nameInput.value.trim() : '';
+        
+        // Validate - at least email or phone required
+        if (!email && !phone) {
+            // Highlight the required fields
+            if (emailInput) emailInput.classList.add('wpaia-input-error');
+            if (phoneInput) phoneInput.classList.add('wpaia-input-error');
+            return;
+        }
+        
+        // Remove error classes
+        if (emailInput) emailInput.classList.remove('wpaia-input-error');
+        if (phoneInput) phoneInput.classList.remove('wpaia-input-error');
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = '...';
+        
+        try {
+            const formData = new FormData();
+            formData.append('action', 'wpaia_save_lead');
+            formData.append('nonce', config.nonce);
+            formData.append('session_id', state.conversationId);
+            formData.append('email', email);
+            formData.append('phone', phone);
+            formData.append('name', name);
+            formData.append('page_url', window.location.href);
+            
+            const response = await fetch(config.ajaxUrl, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                state.leadCaptured = true;
+                localStorage.setItem('wpaia_lead_captured_' + state.conversationId, 'true');
+                hideLeadForm();
+                
+                // Show thank you message
+                addMessage('assistant', config.strings.thanks || 'Thank you! How can I help you?');
+            } else {
+                console.error('Lead save failed:', data);
+            }
+        } catch (error) {
+            console.error('Lead submit error:', error);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = config.strings.submit || 'Submit';
+        }
     }
 
     // Initialize when DOM is ready

@@ -3,7 +3,7 @@
  * Plugin Name: WP AI Assistant
  * Plugin URI: https://github.com/carlosllamax/wp-ai-assistant
  * Description: AI-powered chat assistant for WordPress. Supports Groq, OpenAI, Anthropic. BYOK (Bring Your Own Key).
- * Version: 1.1.1
+ * Version: 1.2.0
  * Author: Carlos Llamas
  * Author URI: https://carlosllamax.com
  * License: GPL v2 or later
@@ -20,7 +20,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('WPAIA_VERSION', '1.1.1');
+define('WPAIA_VERSION', '1.2.0');
 define('WPAIA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('WPAIA_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('WPAIA_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -66,6 +66,11 @@ final class WP_AI_Assistant {
         require_once WPAIA_PLUGIN_DIR . 'includes/class-updater.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/class-license.php';
         
+        // Database and conversations
+        require_once WPAIA_PLUGIN_DIR . 'includes/class-database.php';
+        require_once WPAIA_PLUGIN_DIR . 'includes/class-conversations-admin.php';
+        require_once WPAIA_PLUGIN_DIR . 'includes/class-conversation-logger.php';
+        
         // AI Providers
         require_once WPAIA_PLUGIN_DIR . 'includes/providers/interface-provider.php';
         require_once WPAIA_PLUGIN_DIR . 'includes/providers/class-groq.php';
@@ -107,11 +112,15 @@ final class WP_AI_Assistant {
      * Initialize plugin components
      */
     public function init_components() {
+        // Check database tables
+        WPAIA_Database::check_tables();
+        
         // Admin settings
         if (is_admin()) {
             new WPAIA_Admin();
             new WPAIA_Updater();
             new WPAIA_License();
+            new WPAIA_Conversations_Admin();
         }
         
         // REST API
@@ -169,6 +178,9 @@ final class WP_AI_Assistant {
      * Plugin activation
      */
     public function activate() {
+        // Create database tables
+        WPAIA_Database::create_tables();
+        
         // Set default options
         $defaults = array(
             'enabled' => false,
@@ -184,6 +196,11 @@ final class WP_AI_Assistant {
             'include_faqs' => true,
             'enable_order_lookup' => true,
             'rate_limit' => 20, // requests per minute
+            'save_conversations' => true,
+            'lead_capture_enabled' => false,
+            'lead_capture_mode' => 'after',
+            'lead_capture_after_messages' => 3,
+            'lead_capture_fields' => array('email'),
         );
         
         if (!get_option('wpaia_settings')) {

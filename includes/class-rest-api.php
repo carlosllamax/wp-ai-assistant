@@ -24,6 +24,8 @@ class WPAIA_REST_API {
         add_action('wp_ajax_wpaia_test_connection', array($this, 'ajax_test_connection'));
         add_action('wp_ajax_wpaia_chat', array($this, 'ajax_chat'));
         add_action('wp_ajax_nopriv_wpaia_chat', array($this, 'ajax_chat'));
+        add_action('wp_ajax_wpaia_save_lead', array($this, 'ajax_save_lead'));
+        add_action('wp_ajax_nopriv_wpaia_save_lead', array($this, 'ajax_save_lead'));
     }
     
     /**
@@ -111,6 +113,12 @@ class WPAIA_REST_API {
         // Save to history
         WPAIA_Conversation::add_message($conversation_id, 'user', $message);
         WPAIA_Conversation::add_message($conversation_id, 'assistant', $response['content']);
+        
+        // Save to database (permanent storage)
+        if (class_exists('WPAIA_Database') && WP_AI_Assistant::get_option('save_conversations', true)) {
+            WPAIA_Database::save_message($conversation_id, 'user', $message);
+            WPAIA_Database::save_message($conversation_id, 'assistant', $response['content'], $response['tokens'] ?? 0);
+        }
         
         return rest_ensure_response(array(
             'success' => true,
@@ -301,5 +309,47 @@ class WPAIA_REST_API {
         }
         
         return '127.0.0.1';
+    }
+    
+    /**
+     * AJAX handler for saving lead information
+     */
+    public function ajax_save_lead() {
+        check_ajax_referer('wpaia_chat_nonce', 'nonce');
+        
+        $session_id = sanitize_text_field($_POST['session_id'] ?? '');
+        $email = sanitize_email($_POST['email'] ?? '');
+        $phone = sanitize_text_field($_POST['phone'] ?? '');
+        $name = sanitize_text_field($_POST['name'] ?? '');
+        $page_url = esc_url_raw($_POST['page_url'] ?? '');
+        
+        if (empty($session_id)) {
+            wp_send_json_error(array('message' => __('Session ID required', 'wp-ai-assistant')));
+        }
+        
+        if (empty($email) && empty($phone)) {
+            wp_send_json_error(array('message' => __('Email or phone required', 'wp-ai-assistant')));
+        }
+        
+        if (!class_exists('WPAIA_Database')) {
+            wp_send_json_error(array('message' => __('Database not available', 'wp-ai-assistant')));
+        }
+        
+        $lead_id = WPAIA_Database::save_lead(array(
+            'session_id' => $session_id,
+            'email' => $email,
+            'phone' => $phone,
+            'name' => $name,
+            'page_url' => $page_url,
+        ));
+        
+        if ($lead_id) {
+            wp_send_json_success(array(
+                'lead_id' => $lead_id,
+                'message' => __('Thank you! Your information has been saved.', 'wp-ai-assistant')
+            ));
+        } else {
+            wp_send_json_error(array('message' => __('Failed to save information', 'wp-ai-assistant')));
+        }
     }
 }

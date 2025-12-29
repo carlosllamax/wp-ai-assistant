@@ -5,6 +5,29 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-12-29
+
+### Added
+- **Conversation Storage**: All conversations are now saved to the database for permanent storage
+- **Lead Capture System**: Capture visitor contact information (email, phone, name)
+  - Configurable timing: before chat, after X messages, or when closing chat
+  - Selectable fields: email, phone, and/or name
+  - Customizable form title and description
+  - Skip option for visitors
+- **Conversations Admin Page**: New admin interface under AI Assistant menu
+  - View all conversations with contact info
+  - Stats dashboard (total conversations, leads, today, this week)
+  - Search by email or phone
+  - View full conversation details in modal
+  - Delete individual conversations
+  - Export all conversations to CSV
+- New database tables: `wpaia_leads` and `wpaia_conversations`
+- Automatic database migration on plugin update
+
+### Changed
+- Improved admin settings organization with new "Lead Capture & Conversations" section
+- Updated JavaScript for lead form handling with localStorage state persistence
+
 ## [1.0.0] - 2025-01-XX
 
 ### Added

@@ -219,6 +219,26 @@
         // Initialize preview icon on load
         updatePreviewIcon($('#wpaia_chat_icon').val());
 
+        // Lead capture toggle
+        $('#wpaia_lead_capture_enabled').on('change', function() {
+            if ($(this).is(':checked')) {
+                $('.wpaia-lead-capture-option').slideDown();
+                // Also check if after messages should show
+                $('#wpaia_lead_capture_mode').trigger('change');
+            } else {
+                $('.wpaia-lead-capture-option').slideUp();
+            }
+        });
+        
+        // Lead capture mode change
+        $('#wpaia_lead_capture_mode').on('change', function() {
+            if ($(this).val() === 'after' && $('#wpaia_lead_capture_enabled').is(':checked')) {
+                $('.wpaia-after-messages-option').slideDown();
+            } else {
+                $('.wpaia-after-messages-option').slideUp();
+            }
+        });
+
         // Check for updates link
         $(document).on('click', '.wpaia-check-update', function(e) {
             e.preventDefault();

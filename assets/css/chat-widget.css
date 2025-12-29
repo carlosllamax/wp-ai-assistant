@@ -457,6 +457,79 @@
     cursor: not-allowed !important;
 }
 
+/* Lead Capture Form */
+#wpaia-chat-widget .wpaia-lead-form {
+    padding: 16px 20px !important;
+    background: var(--wpaia-white) !important;
+    border-top: 1px solid var(--wpaia-gray-200) !important;
+    margin: 0 !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-form-inner h4 {
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    font-size: 15px !important;
+    color: var(--wpaia-gray-900) !important;
+    font-weight: 600 !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-description {
+    margin: 0 0 12px 0 !important;
+    padding: 0 !important;
+    font-size: 13px !important;
+    color: var(--wpaia-gray-500) !important;
+    line-height: 1.4 !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-input {
+    width: 100% !important;
+    padding: 10px 12px !important;
+    border: 1px solid var(--wpaia-gray-300) !important;
+    border-radius: var(--wpaia-radius-sm) !important;
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+    transition: var(--wpaia-transition) !important;
+    background: var(--wpaia-white) !important;
+    color: var(--wpaia-gray-900) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-input:focus {
+    outline: none !important;
+    border-color: var(--wpaia-primary) !important;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1) !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-input.wpaia-input-error {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+#wpaia-chat-widget .wpaia-lead-buttons {
+    display: flex !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-skip {
+    background: var(--wpaia-gray-200) !important;
+    color: var(--wpaia-gray-700) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-skip:hover {
+    background: var(--wpaia-gray-300) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-submit-lead {
+    background: var(--wpaia-primary) !important;
+    color: var(--wpaia-white) !important;
+}
+
+#wpaia-chat-widget .wpaia-btn-submit-lead:hover {
+    background: var(--wpaia-primary-dark) !important;
+}
+
 /* Input Area */
 #wpaia-chat-widget .wpaia-input-area {
     padding: 16px 20px !important;
@@ -617,7 +690,8 @@
     }
     
     #wpaia-chat-widget .wpaia-input,
-    #wpaia-chat-widget .wpaia-order-input {
+    #wpaia-chat-widget .wpaia-order-input,
+    #wpaia-chat-widget .wpaia-lead-input {
         background: #374151 !important;
         border-color: #4b5563 !important;
         color: #f9fafb !important;

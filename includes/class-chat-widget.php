@@ -49,6 +49,14 @@ class WPAIA_Chat_Widget {
             'position' => WP_AI_Assistant::get_option('widget_position', 'bottom-right'),
             'primaryColor' => WP_AI_Assistant::get_option('primary_color', '#0073aa'),
             'enableOrderLookup' => WP_AI_Assistant::get_option('enable_order_lookup') && class_exists('WooCommerce'),
+            'leadCapture' => array(
+                'enabled' => WP_AI_Assistant::get_option('lead_capture_enabled', false),
+                'mode' => WP_AI_Assistant::get_option('lead_capture_mode', 'after'),
+                'afterMessages' => (int) WP_AI_Assistant::get_option('lead_capture_after_messages', 3),
+                'fields' => WP_AI_Assistant::get_option('lead_capture_fields', array('email')),
+                'title' => WP_AI_Assistant::get_option('lead_capture_title', '') ?: __('Stay in touch!', 'wp-ai-assistant'),
+                'description' => WP_AI_Assistant::get_option('lead_capture_description', '') ?: __('Leave your contact info and we\'ll get back to you.', 'wp-ai-assistant'),
+            ),
             'strings' => array(
                 'placeholder' => __('Type your message...', 'wp-ai-assistant'),
                 'send' => __('Send', 'wp-ai-assistant'),
@@ -57,12 +65,20 @@ class WPAIA_Chat_Widget {
                 'orderLookup' => __('Check Order Status', 'wp-ai-assistant'),
                 'orderNumber' => __('Order Number', 'wp-ai-assistant'),
                 'email' => __('Email', 'wp-ai-assistant'),
+                'phone' => __('Phone', 'wp-ai-assistant'),
+                'name' => __('Name', 'wp-ai-assistant'),
                 'verify' => __('Verify', 'wp-ai-assistant'),
                 'verifying' => __('Verifying...', 'wp-ai-assistant'),
                 'verified' => __('Order verified! You can now ask about your order.', 'wp-ai-assistant'),
                 'verifyFailed' => __('Could not verify order. Please check your details.', 'wp-ai-assistant'),
                 'minimize' => __('Minimize', 'wp-ai-assistant'),
                 'close' => __('Close', 'wp-ai-assistant'),
+                'submit' => __('Submit', 'wp-ai-assistant'),
+                'skip' => __('Skip', 'wp-ai-assistant'),
+                'thanks' => __('Thank you! How can I help you?', 'wp-ai-assistant'),
+                'emailPlaceholder' => __('your@email.com', 'wp-ai-assistant'),
+                'phonePlaceholder' => __('Your phone number', 'wp-ai-assistant'),
+                'namePlaceholder' => __('Your name', 'wp-ai-assistant'),
             ),
         ));
     }
@@ -130,6 +146,33 @@ class WPAIA_Chat_Widget {
                         <div class="wpaia-order-buttons">
                             <button type="button" class="wpaia-btn wpaia-btn-cancel"><?php _e('Cancel', 'wp-ai-assistant'); ?></button>
                             <button type="button" class="wpaia-btn wpaia-btn-verify"><?php _e('Verify', 'wp-ai-assistant'); ?></button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lead Capture Form (hidden by default) -->
+                <?php 
+                $lead_capture_enabled = WP_AI_Assistant::get_option('lead_capture_enabled', false);
+                $lead_capture_fields = WP_AI_Assistant::get_option('lead_capture_fields', array('email'));
+                $lead_capture_title = WP_AI_Assistant::get_option('lead_capture_title', '') ?: __('Stay in touch!', 'wp-ai-assistant');
+                $lead_capture_description = WP_AI_Assistant::get_option('lead_capture_description', '') ?: __('Leave your contact info and we\'ll get back to you.', 'wp-ai-assistant');
+                ?>
+                <div class="wpaia-lead-form" style="display: none;">
+                    <div class="wpaia-lead-form-inner">
+                        <h4><?php echo esc_html($lead_capture_title); ?></h4>
+                        <p class="wpaia-lead-description"><?php echo esc_html($lead_capture_description); ?></p>
+                        <?php if (in_array('name', $lead_capture_fields)): ?>
+                        <input type="text" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your name', 'wp-ai-assistant'); ?>" id="wpaia-lead-name">
+                        <?php endif; ?>
+                        <?php if (in_array('email', $lead_capture_fields)): ?>
+                        <input type="email" class="wpaia-lead-input" placeholder="<?php esc_attr_e('your@email.com', 'wp-ai-assistant'); ?>" id="wpaia-lead-email">
+                        <?php endif; ?>
+                        <?php if (in_array('phone', $lead_capture_fields)): ?>
+                        <input type="tel" class="wpaia-lead-input" placeholder="<?php esc_attr_e('Your phone number', 'wp-ai-assistant'); ?>" id="wpaia-lead-phone">
+                        <?php endif; ?>
+                        <div class="wpaia-lead-buttons">
+                            <button type="button" class="wpaia-btn wpaia-btn-skip"><?php _e('Skip', 'wp-ai-assistant'); ?></button>
+                            <button type="button" class="wpaia-btn wpaia-btn-submit-lead"><?php _e('Submit', 'wp-ai-assistant'); ?></button>
                         </div>
                     </div>
                 </div>
