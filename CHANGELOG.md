@@ -5,6 +5,19 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2024-12-29
+
+### Fixed
+- **Responsive height**: Chat window was too tall on mobile (100vh - 100px)
+  - Now uses max-height 70vh on mobile devices
+  - Added tablet breakpoint (768px) with 450px max-height
+  - Added support for short screens (max-height 600px)
+  - Proper min-height constraints for usability
+
+### Changed
+- Reduced header and input padding on mobile for more content space
+- Messages container height adjusts proportionally to viewport
+
 ## [1.3.2] - 2024-12-29
 
 ### Fixed
