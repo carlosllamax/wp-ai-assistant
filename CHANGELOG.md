@@ -5,6 +5,22 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-01-03
+
+### Added
+- **Fullscreen Mobile Experience**: Chat now takes full screen on mobile devices (≤480px)
+  - Slide-up animation from bottom (like native messaging apps)
+  - Body scroll lock prevents background page scrolling
+  - iPhone safe area support (notch and home indicator)
+  - Font-size 16px on inputs prevents iOS auto-zoom
+  - Hidden toggle button when chat is open
+  - Larger touch targets (44px) for better accessibility
+  - Uses `100dvh` for dynamic viewport height (handles mobile browser chrome)
+
+### Changed
+- Improved mobile UX with app-like feel
+- Better touch interactions on mobile devices
+
 ## [1.3.3] - 2024-12-29
 
 ### Fixed

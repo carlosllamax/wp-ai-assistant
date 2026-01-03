@@ -4,7 +4,7 @@ Tags: ai, chatbot, assistant, groq, openai, woocommerce, customer support
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.3.3
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -100,6 +100,14 @@ Yes! The plugin includes GDPR features:
 4. Mobile responsive design
 
 == Changelog ==
+
+= 1.4.0 =
+* New: Fullscreen chat experience on mobile devices
+* New: Slide-up animation like native messaging apps
+* New: Body scroll lock on mobile when chat is open
+* New: iPhone safe area support (notch and home indicator)
+* Improved: Larger touch targets for better accessibility
+* Improved: Prevents iOS auto-zoom on input focus
 
 = 1.3.3 =
 * Fixed: Chat window height too large on mobile devices
