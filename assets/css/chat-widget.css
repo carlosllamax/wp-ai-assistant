@@ -698,60 +698,117 @@
     }
 }
 
-/* Mobile Styles */
+/* Mobile Styles - Fullscreen Chat Experience */
 @media (max-width: 480px) {
+    /* Toggle button position when chat is closed */
     #wpaia-chat-widget.wpaia-widget {
-        bottom: 10px !important;
-        right: 10px !important;
+        bottom: 20px !important;
+        right: 20px !important;
         left: auto !important;
     }
     
     #wpaia-chat-widget.wpaia-position-bottom-right,
     #wpaia-chat-widget.wpaia-position-bottom-left {
-        right: 10px !important;
+        right: 20px !important;
         left: auto !important;
     }
     
+    /* Fullscreen chat window when open */
     #wpaia-chat-widget .wpaia-chat-window {
-        width: calc(100vw - 20px) !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        height: 100dvh !important; /* Dynamic viewport height for mobile browsers */
         max-width: none !important;
-        height: auto !important;
-        max-height: 70vh !important;
-        min-height: 350px !important;
-        bottom: 70px !important;
-        right: -10px !important;
-        border-radius: var(--wpaia-radius-sm) !important;
+        max-height: none !important;
+        min-height: none !important;
+        border-radius: 0 !important;
+        z-index: 9999999 !important;
     }
     
+    /* Messages take full available space */
     #wpaia-chat-widget .wpaia-messages {
-        max-height: calc(70vh - 180px) !important;
-        min-height: 150px !important;
+        flex: 1 !important;
+        max-height: none !important;
+        min-height: auto !important;
+        height: auto !important;
     }
     
+    /* Hide toggle button when chat is open */
+    #wpaia-chat-widget.wpaia-open .wpaia-toggle-btn {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transform: scale(0) !important;
+    }
+    
+    /* Toggle button styling */
     #wpaia-chat-widget .wpaia-toggle-btn {
         width: 56px !important;
         height: 56px !important;
+        transition: all 0.3s ease !important;
     }
     
+    /* Header styling for fullscreen */
     #wpaia-chat-widget .wpaia-header {
+        padding: 16px !important;
+        padding-top: max(16px, env(safe-area-inset-top)) !important; /* iPhone notch */
+        min-height: 60px !important;
+    }
+    
+    #wpaia-chat-widget .wpaia-header-info h4 {
+        font-size: 17px !important;
+    }
+    
+    /* Close button more prominent */
+    #wpaia-chat-widget .wpaia-close-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 24px !important;
+    }
+    
+    /* Input area styling */
+    #wpaia-chat-widget .wpaia-input-area {
+        padding: 12px !important;
+        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; /* iPhone home indicator */
+    }
+    
+    #wpaia-chat-widget .wpaia-input {
+        font-size: 16px !important; /* Prevents iOS zoom on focus */
         padding: 12px 14px !important;
     }
     
-    #wpaia-chat-widget .wpaia-input-area {
-        padding: 10px !important;
-    }
-}
-
-/* Small Mobile - Very short screens */
-@media (max-height: 600px) {
-    #wpaia-chat-widget .wpaia-chat-window {
-        max-height: 60vh !important;
-        min-height: 280px !important;
+    /* Send button */
+    #wpaia-chat-widget .wpaia-send-btn {
+        width: 44px !important;
+        height: 44px !important;
     }
     
-    #wpaia-chat-widget .wpaia-messages {
-        max-height: calc(60vh - 160px) !important;
-        min-height: 100px !important;
+    /* Messages styling */
+    #wpaia-chat-widget .wpaia-message {
+        max-width: 85% !important;
+        font-size: 15px !important;
+    }
+    
+    /* Powered by footer */
+    #wpaia-chat-widget .wpaia-powered {
+        padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    }
+    
+    /* Smooth open animation */
+    #wpaia-chat-widget .wpaia-chat-window {
+        transform: translateY(100%) !important;
+        opacity: 1 !important;
+        visibility: hidden !important;
+    }
+    
+    #wpaia-chat-widget.wpaia-open .wpaia-chat-window {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 }
 

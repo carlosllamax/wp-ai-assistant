@@ -150,11 +150,35 @@
     }
 
     /**
+     * Check if device is mobile
+     */
+    function isMobile() {
+        return window.innerWidth <= 480;
+    }
+
+    /**
      * Toggle chat window
      */
     function toggleChat() {
         state.isOpen = !state.isOpen;
         widget.classList.toggle('wpaia-open', state.isOpen);
+        
+        // Handle body scroll lock on mobile (fullscreen mode)
+        if (isMobile()) {
+            if (state.isOpen) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = `-${window.scrollY}px`;
+            } else {
+                const scrollY = document.body.style.top;
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+                document.body.style.top = '';
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        }
         
         if (state.isOpen) {
             input.focus();
