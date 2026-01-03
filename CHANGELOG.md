@@ -5,6 +5,15 @@ All notable changes to WP AI Assistant will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2025-01-03
+
+### Changed
+- **Mobile Close Button**: X icon replaces minimize line on mobile for clearer UX
+  - Circular background makes it more tappable
+  - Desktop keeps the minimize icon (horizontal line)
+- **Toggle Bubble Animation**: Smooth scale + opacity transition when hiding/showing
+- More native app-like interaction flow
+
 ## [1.4.0] - 2025-01-03
 
 ### Added
