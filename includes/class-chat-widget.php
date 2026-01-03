@@ -131,9 +131,15 @@ class WPAIA_Chat_Widget {
                             <span class="wpaia-subtitle" id="wpaia-subtitle"><?php _e('AI Assistant', 'wp-ai-assistant'); ?></span>
                         </div>
                     </div>
-                    <button class="wpaia-minimize-btn" aria-label="<?php esc_attr_e('Minimize chat', 'wp-ai-assistant'); ?>">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <button class="wpaia-minimize-btn" aria-label="<?php esc_attr_e('Close chat', 'wp-ai-assistant'); ?>">
+                        <!-- Line icon for desktop minimize -->
+                        <svg class="wpaia-icon-minimize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <!-- X icon for mobile close -->
+                        <svg class="wpaia-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                     </button>
                 </div>
